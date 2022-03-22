@@ -1,13 +1,14 @@
-# WISPR tools for Xiegu X6100
+# WSPR tools for Xiegu X6100
 
 * Receive only (so far)
-* No rigctrl
+* No rig control
 * Uploads spots to wsprnet.org
 
 ## Installation
 
 1. Unpack x6100-local.tgz in filesystem root.
 2. Update /etc/profile to add /usr/local/bin to PATH.
+3. Ensure /etc/resolv.conf has a nameserver.
 
 ## Use
 
@@ -17,4 +18,4 @@
 
 ## Tips
 
-GNU Screen is included to allow the spotter loop to survive disconnecting SSH.
+* GNU Screen is included to allow the spotter loop to survive disconnecting SSH.
