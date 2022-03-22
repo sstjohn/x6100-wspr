@@ -31,7 +31,7 @@ import requests
 #FREQUENCY="5.2872"   #60m
 #FREQUENCY="5.3647"   #60m
 #FREQUENCY="7.0386"   #40m
-FREQUENCY="10.1387"  #30m
+#FREQUENCY="10.1387"  #30m
 #FREQUENCY="14.0956"  #20m
 #FREQUENCY="18.1046"  #17m
 #FREQUENCY="21.0946"  #15m
@@ -39,8 +39,8 @@ FREQUENCY="10.1387"  #30m
 #FREQUENCY="28.1246"  #10m
 #FREQUENCY="50.293"   #6m
 
-CALL="WI9YZA"
-GRID="EN53ib"
+#CALL=""
+#GRID=""
 
 WSPRD_ARGS="-w"
 
@@ -52,6 +52,10 @@ def check_setup():
 	if os.system("command -v wsprd 2>&1 >/dev/null"):
 		print("Put wsprd directory on PATH first.")
 		return False
+	for i in ("FREQUENCY", "CALL", "GRID"):
+		if not i in globals():
+			print(f"Edit spotter-loop.py to set {i} first.")
+			return False
 	return True
 
 def decode_thread_main(recordings_queue):
