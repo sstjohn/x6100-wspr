@@ -6,15 +6,15 @@
 
 ## Installation
 
-1. Unpack x6100-local.tgz in filesystem root.
+1. Unpack x6100-local.tgz into the X6100 filesystem root.
 2. Update /etc/profile to add /usr/local/bin to PATH.
 3. Ensure /etc/resolv.conf has a nameserver.
 
 ## Use
 
-1. Set a WSPR frequency on the X6100.
+1. Set a WSPR frequency on the X6100 UI.
 2. Edit FREQUENCY, CALL and GRID toward the top of spotter-loop.py.
-3. Run spotter-loop.py.
+3. Run spotter-loop.py on the X6100.
 
 ## Tips
 
