@@ -45,7 +45,10 @@ import requests
 WSPRD_ARGS="-w"
 
 def check_setup():
-	resolv = open('/etc/resolv.conf', 'r').readlines()
+	try:
+		resolv = open('/etc/resolv.conf', 'r').readlines()
+	except FileNotFoundError:
+		resolv = []
 	if not 'nameserver' in ''.join(resolv):
 		print("Set up /etc/resolv.conf for DNS resolution first.")
 		return False
@@ -68,6 +71,9 @@ def decode_thread_main(recordings_queue):
 		upload_spots(next_recording)
 
 def upload_spots(recording=None, spotfile="wspr_spots.txt"):
+	if os.path.getsize(spotfile) == 0:
+		print("no spots")
+		return True
 	files = {'allmept': open(spotfile, 'r')}
 	params = {'call': CALL, 'grid': GRID}
 	response = None
@@ -112,7 +118,7 @@ def main():
 		scheduler.add_job(retry_failed_spot_uploads, 'cron', minute='*/30')
 		scheduler.start()
 	finally:
-		try: recordings_queue.put(None)
+		try: recordings_queue.put(None, block=False)
 		except Exception: pass
 
 if __name__ == "__main__":
