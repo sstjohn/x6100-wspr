@@ -1,4 +1,4 @@
-#!/usr/local/bin/python3.9
+#!/usr/local/bin/python3.10
 # -*- coding: utf-8 -*-
 #
 # Copyright (c) 2022 Saul St John
@@ -39,19 +39,22 @@ import requests
 #FREQUENCY="28.1246"  #10m
 #FREQUENCY="50.293"   #6m
 
-#CALL=""
-#GRID=""
-
+CALL=""
+GRID=""
 WSPRD_ARGS="-w"
 
-def check_setup():
+def check_setup(retry=False):
 	try:
 		resolv = open('/etc/resolv.conf', 'r').readlines()
 	except FileNotFoundError:
 		resolv = []
 	if not 'nameserver' in ''.join(resolv):
-		print("Set up /etc/resolv.conf for DNS resolution first.")
-		return False
+		if os.path.exists("/tmp/resolv.conf") and not ''.join(resolv) and not retry:
+			os.system("cp /tmp/resolv.conf /etc")
+			return check_setup(True)
+		else:
+			print("Set up /etc/resolv.conf for DNS resolution first.")
+			return False
 	if os.system("command -v wsprd 2>&1 >/dev/null"):
 		print("Put wsprd directory on PATH first.")
 		return False
