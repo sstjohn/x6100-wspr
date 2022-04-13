@@ -1,0 +1,5 @@
+config BR2_PACKAGE_TTY0TTY
+        bool "tty0tty"
+        depends on BR2_LINUX_KERNEL
+        help
+                TTY0TTY module
