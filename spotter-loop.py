@@ -19,6 +19,7 @@
 from contextlib import contextmanager
 from datetime import datetime
 from glob import glob
+import json
 from math import ceil
 from queue import Queue
 import os
@@ -84,7 +85,8 @@ BANDS = {
 
 HOPPING_SCHEDULE = ["160", "80", "60", "40", "30", "20", "17", "15", "12", "10"] * 3
 
-WSPRD_ARGS="-w"
+DATA_DIR="/root"
+WSPRD_ARGS=f"-w -a {DATA_DIR}"
 
 def check_setup(retry=False):
     try:
@@ -102,10 +104,17 @@ def check_setup(retry=False):
     if os.system("command -v wsprd 2>&1 >/dev/null"):
         print("Put wsprd directory on PATH first.")
         return False
+    if os.path.exists(f"{DATA_DIR}/.spotter.conf"):
+        user_conf = json.load(open(f"{DATA_DIR}/.spotter.conf", "r"))
+    else:
+        user_conf = {}
     for i in ("CALL", "GRID"):
         if not i in globals() or not globals()[i]:
-            print(f"Edit spotter-loop.py to set {i} first.")
-            return False
+            if i in user_conf:
+                globals()[i] = user_conf[i]
+            else:
+              print(f"Edit spotter-loop.py to set {i} first.")
+              return False
     if not os.path.exists("/dev/tnt0"):
         if os.system("insmod /usr/local/lib/modules/`uname -r`/extra/tty0tty.ko"):
             print("Load tty0tty.ko first.")
@@ -146,7 +155,7 @@ def get_rig():
 
 
 def hop_bands(rig):
-    schedule_index = ceil(datetime.utcnow().minute / 2.0)
+    schedule_index = ceil(datetime.utcnow().minute / 2.0) % 30
     chosen_band = HOPPING_SCHEDULE[schedule_index]
     if not BANDS[chosen_band]['enabled']:
         chosen_band = choice(list(filter(lambda b: BANDS[b]["enabled"], BANDS)))
@@ -171,31 +180,35 @@ def upload_spots(recording=None, spotfile="wspr_spots.txt"):
     if os.path.getsize(spotfile) == 0:
         print("no spots")
         return True
-    files = {'allmept': open(spotfile, 'r')}
-    params = {'call': CALL, 'grid': GRID}
+    files = {'allmept': open(f"{DATA_DIR}/{spotfile}", 'r')}
+    params = {'call': CALL, 'grid': GRID, 'version': 'x6w-0.2.1'}
     response = None
     try:
         response = requests.post('http://wsprnet.org/post', files=files, params=params)
         response.raise_for_status()
+        if "Log rejected" in response.text:
+            raise Exception("log rejected")
         return True
+
     except Exception as e:
-        print(f"spotfile upload failed: {e}")
+        print(f"failed to upload spotfile {spotfile}: {e}")
         if spotfile == "wspr_spots.txt": 
             timestamp = os.path.splitext(os.path.basename(recording))[0]
-            os.system(f"mv wspr_spots.txt wspr_spots-{timestamp}.rej")
+            os.system(f"mv {DATA_DIR}/wspr_spots.txt {DATA_DIR}/wspr_spots-{timestamp}.rej")
         return False
+
     finally:
         if response:
             print(response.text)            
 
 
 def retry_failed_spot_uploads():
-    rejects = glob("*.rej")
+    rejects = glob(f"{DATA_DIR}/*.rej")
     if not rejects:
         return
     print("retrying failed spot uploads")
     for reject in rejects:
-        if upload_spots(spotfile=reject):
+        if upload_spots(spotfile=os.path.basename(reject)):
             os.system(f"rm {reject}")
 
 
