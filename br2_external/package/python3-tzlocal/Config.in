@@ -1,0 +1,5 @@
+config BR2_PACKAGE_PYTHON3_TZLOCAL
+        bool "python3-tzlocal"
+	depends on BR2_PACKAGE_PYTHON3
+        help
+                apscheduler for python

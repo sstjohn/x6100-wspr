@@ -1,3 +1,8 @@
 x6100-wspr.wiki/
 .*.swp
 x6100-local.tgz
+boot.scr
+zImage
+sun8i-r16-x6100.dtb
+u-boot-sunxi-with-spl.bin
+br2_external/configs/x6100-wspr_defconfig_old

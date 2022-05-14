@@ -1,0 +1,3 @@
+config BR2_PACKAGE_LIBQINJ
+        bool "libqinj"
+        depends on BR2_PACKAGE_QT5

@@ -1,0 +1,2 @@
+config BR2_PACKAGE_HAMLIB_FOR_WSJTX
+        bool "hamlib_for_wsjtx"
