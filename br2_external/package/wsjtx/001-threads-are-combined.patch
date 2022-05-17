@@ -1,0 +1,11 @@
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -872,7 +872,7 @@
+ #
+ # fftw3 single precision library
+ #
+-find_package (FFTW3 COMPONENTS single threads REQUIRED)
++find_package (FFTW3 COMPONENTS single REQUIRED)
+ 
+ #
+ # hamlib setup

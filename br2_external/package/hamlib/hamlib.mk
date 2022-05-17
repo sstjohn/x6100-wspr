@@ -8,4 +8,5 @@ HAMLIB_CONF_OPTS += \
   PYTHON_CPPFLAGS="-I$(STAGING_DIR)/usr/include/python$(PYTHON3_VERSION_MAJOR)" \
   PYTHON_LIBS="-L$(STAGING_DIR)/usr/lib -lpython$(PYTHON3_VERSION_MAJOR)"
 
+
 $(eval $(autotools-package))

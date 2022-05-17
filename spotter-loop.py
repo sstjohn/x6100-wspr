@@ -1,4 +1,4 @@
-#!/usr/local/bin/python3.10
+#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 #
 # Copyright (c) 2022 Saul St John
@@ -30,6 +30,7 @@ from time import sleep
 from traceback import print_exc
 
 from apscheduler.schedulers.blocking import BlockingScheduler
+from apscheduler.triggers.cron import CronTrigger
 import Hamlib
 import requests
 
@@ -116,7 +117,7 @@ def check_setup(retry=False):
               print(f"Edit spotter-loop.py to set {i} first.")
               return False
     if not os.path.exists("/dev/tnt0"):
-        if os.system("insmod /usr/local/lib/modules/`uname -r`/extra/tty0tty.ko"):
+        if os.system("insmod /lib/modules/`uname -r`/extra/tty0tty.ko"):
             print("Load tty0tty.ko first.")
             return False
     
@@ -131,14 +132,22 @@ def redirect_qt_app():
         newdev = os.makedev(os.major(tnt0_stat.st_rdev), os.minor(tnt0_stat.st_rdev))
         os.mknod("/dev/ttyS2", tnt0_stat.st_mode, newdev)
         
-        os.system("/etc/init.d/S99userappstart restart")
+        if os.path.exists("/etc/init.d/S99userappstart"):
+            os.system("/etc/init.d/S99userappstart restart")
+        elif os.path.exists("/etc/init.d/S99-1-monit"):
+            os.system("monit restart x6100_ui_v100")
+        else:
+            print("Don't know how to restart QT app.")
         sleep(10)
 
         yield None
 
     finally:
         os.rename("/dev/ttyS2.old", "/dev/ttyS2")
-        os.system("/etc/init.d/S99userappstart restart")
+        if os.path.exists("/etc/init.d/S99userappstart"):
+            os.system("/etc/init.d/S99userappstart restart")
+        else:
+            os.system("monit restart x6100_ui_v100")
 
 
 @contextmanager
@@ -230,8 +239,8 @@ def main():
             decode_thread.start()
             try:
                 scheduler = BlockingScheduler()
-                scheduler.add_job(do_rx, 'cron', minute='*/2', second=0, args=[recordings_queue, rig])
-                scheduler.add_job(retry_failed_spot_uploads, 'cron', minute='*/30')
+                scheduler.add_job(do_rx, CronTrigger(minute='*/2', second=0), args=[recordings_queue, rig])
+                scheduler.add_job(retry_failed_spot_uploads, CronTrigger(minute='*/30'))
                 hop_bands(rig)
                 scheduler.start()
             finally:
