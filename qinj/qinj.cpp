@@ -2,6 +2,7 @@
 #include <QThread>
 #include <QString>
 #include <QScreen>
+#include <QMessageBox>
 #include <QApplication>
 #include <QLabel>
 #include "qinj.h"
@@ -29,6 +30,13 @@ const char *Injection::getTestText()
 	if (!retVal)
 		retVal = "TEST";
 	return retVal;
+}
+
+void Injection::messageBoxNeedsShowing(QString txt)
+{
+	QMessageBox msgBox;
+	msgBox.setText(txt);
+	msgBox.exec();
 }
 
 bool Injection::screenshotRequested(QString filename)

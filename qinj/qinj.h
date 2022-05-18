@@ -42,5 +42,6 @@ public Q_SLOTS:
 	void injectionThreadMoved(QThread *newThread);
 	void testFlashTimerExpired();
 	bool screenshotRequested(QString);
+	void messageBoxNeedsShowing(QString);
 };
 #endif
