@@ -8,12 +8,12 @@
 
 1. Prepare a bootable SD card.
 2. Unpack the root filesystem to the SD card.
-2. Edit CALL and GRID toward the top of /usr/local/bin/spotter-loop.py.
+2. Edit CALL and GRID toward the top of `/root/spotter-loop.py`.
 3. (optional) Edit BANDS or HOPPING\_SCHEDULE to taste.
 
 ## Use
 
-Boot the SD card on the X6100, run /root/spotter-loop.py on it.
+Boot the SD card on the X6100, run `/root/spotter-loop.py` on it.
 
 ## SD card preparation
 
@@ -38,10 +38,10 @@ This will take over an hour and several dozen gigabytes of disk space.
 
 * GNU Screen is included to allow the spotter loop to survive disconnects.
 * Gamma-Ray is included for Qt debugging.
-* Hamlib and tty0tty are included for loopback control. (See spotter loop 
-  script for details, towards the top).
+* Hamlib and tty0tty are included for loopback control. (See `redirect_qt_app` 
+  in the spotter loop script).
 * Set the `X6100_SDCARD_DEV` environment variable to the SD card device and
-  the build root will update its second partition with the new rootfs in the 
+  the buildroot will update its second partition with the new rootfs in the 
   post image step. (See `br2_external/build/post_image.sh` for details.)
 * The kernel built in the buildroot will boot, but will not drive the display
   as panel drivers are not available. The post-build step replaces the built
