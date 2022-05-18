@@ -1,4 +1,7 @@
+#include <cstdlib>
 #include <QThread>
+#include <QString>
+#include <QScreen>
 #include <QApplication>
 #include <QLabel>
 #include "qinj.h"
@@ -16,18 +19,39 @@ Injection::Injection(QObject *parent) : QObject(parent)
 	this->threadMovedConnection = connect(QThread::currentThread(),
 		SIGNAL(injectionThreadMoved(QThread *)),
 		this,
-		SLOT(onInjectionThreadMoved(QThread *))
+		SLOT(injectionThreadMoved(QThread *))
 	);
 }
 
-void Injection::onInjectionThreadMoved(QThread *newThread)
+const char *Injection::getTestText()
+{
+	const char *retVal = std::getenv("QINJ_TEXT");
+	if (!retVal)
+		retVal = "TEST";
+	return retVal;
+}
+
+bool Injection::screenshotRequested(QString filename)
+{
+	QScreen *screen = QApplication::primaryScreen();
+	if (!screen)
+		return false;
+
+	QPixmap pixmap = screen->grabWindow(0);
+	if (!pixmap)
+		return false;
+
+	return pixmap.save(filename);
+}
+
+void Injection::injectionThreadMoved(QThread *newThread)
 {
 	QWidget *topLevelWidget = QApplication::topLevelWidgets().back();
 	this->setParent(topLevelWidget);
 	
 	this->lblTxf = topLevelWidget->findChild<QLabel *>("labelFullbandTxe");
 	if (this->lblTxf) {
-		this->lblTxf->setText("TEST");
+		this->lblTxf->setText(this->getTestText());
 		this->lblTxf->show();
 	}
 
@@ -69,9 +93,12 @@ void initialize()
 {
 	if (!__initialized) {
 		__initialized = true;
+		bool iPythonWanted = NULL != std::getenv("QINJ_CONSOLE");
 		injectionThread = new InjectionThread();
 		injectionThread->start();
-		iPythonThread = new IPythonThread();
-		iPythonThread->start();
+		if(iPythonWanted) {
+			iPythonThread = new IPythonThread();
+			iPythonThread->start();
+		}
 	}
 }

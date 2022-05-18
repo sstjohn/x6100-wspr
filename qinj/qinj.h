@@ -3,6 +3,8 @@
 
 #include <QTimer>
 #include <QThread>
+#include <QString>
+#include <QScreen>
 #include <QLabel>
 #include <QApplication>
 
@@ -31,12 +33,14 @@ private:
 	QMetaObject::Connection threadMovedConnection;
 	QLabel *lblTxf = 0;
 	QTimer *tmrTestFlash = 0;
+	const char *getTestText();
 
 public: 
         Injection(QObject *parent = 0);
 
 public Q_SLOTS:
-	void onInjectionThreadMoved(QThread *newThread);
+	void injectionThreadMoved(QThread *newThread);
 	void testFlashTimerExpired();
+	bool screenshotRequested(QString);
 };
 #endif

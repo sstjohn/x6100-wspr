@@ -24,6 +24,7 @@ from math import ceil
 from queue import Queue
 import os
 from random import choice
+from subprocess import Popen
 import sys
 from threading import Thread
 from time import sleep
@@ -40,49 +41,40 @@ GRID=""
 BANDS = {
   "160": {
      "frequency": 1836600,
-     "enabled": True
   },
   "80": {
      "frequency": 3568600,
-     "enabled": True
   },
   "60": {
      "frequency": 5287200,
-     "enabled": True
   },
   "40": {
      "frequency": 7038600,
-     "enabled": True
   },
   "30": {
      "frequency": 10138700,
-     "enabled": True
   },
   "20": {
      "frequency": 14095600,
-     "enabled": True
   },
   "17": {
      "frequency": 18104600,
-     "enabled": True
   },
   "15": {
      "frequency": 21094600,
-     "enabled": True
   },
   "12": {
      "frequency": 24924600,
-     "enabled": True
   },
   "10": {
      "frequency": 28124600,
-     "enabled": True
   },
   "6": {
      "frequency": 50293000,
-     "enabled": True
   }
 }
+
+ALL_BAND_DEFAULTS = {'enabled': True}
 
 HOPPING_SCHEDULE = ["160", "80", "60", "40", "30", "20", "17", "15", "12", "10"] * 3
 
@@ -107,6 +99,8 @@ def check_setup(retry=False):
         return False
     if os.path.exists(f"{DATA_DIR}/.spotter.conf"):
         user_conf = json.load(open(f"{DATA_DIR}/.spotter.conf", "r"))
+        if "ALL_BAND_DEFAULTS" in user_conf:
+            ALL_BAND_DEFAULTS.update(user_conf["ALL_BAND_DEFAULTS"])
     else:
         user_conf = {}
     for i in ("CALL", "GRID"):
@@ -133,21 +127,34 @@ def redirect_qt_app():
         os.mknod("/dev/ttyS2", tnt0_stat.st_mode, newdev)
         
         if os.path.exists("/etc/init.d/S99userappstart"):
-            os.system("/etc/init.d/S99userappstart restart")
+            os.system("/etc/init.d/S99userappstart stop")
         elif os.path.exists("/etc/init.d/S99-1-monit"):
-            os.system("monit restart x6100_ui_v100")
+            os.system("monit stop x6100_ui_v100")
         else:
             print("Don't know how to restart QT app.")
-        sleep(10)
+            exit(1)
+
+        sleep(1)    
+        ui_proc = Popen(["/usr/app_qt/x6100_ui_v100"], env=dict(os.environ, **{
+                "QINJ_TEXT": "WSPR",
+                "LD_PRELOAD": "libqinj.so.1.0.0"
+        }))
+        sleep(5)
 
         yield None
 
     finally:
+        ui_proc.terminate()
+        try:
+            ui_proc.wait(5)
+        except TimeoutError:
+            ui_proc.kill()
+
         os.rename("/dev/ttyS2.old", "/dev/ttyS2")
         if os.path.exists("/etc/init.d/S99userappstart"):
-            os.system("/etc/init.d/S99userappstart restart")
+            os.system("/etc/init.d/S99userappstart start")
         else:
-            os.system("monit restart x6100_ui_v100")
+            os.system("monit start x6100_ui_v100")
 
 
 @contextmanager
@@ -166,13 +173,22 @@ def get_rig():
 def hop_bands(rig):
     schedule_index = ceil(datetime.utcnow().minute / 2.0) % 30
     chosen_band = HOPPING_SCHEDULE[schedule_index]
-    if not BANDS[chosen_band]['enabled']:
+    band_params = dict(ALL_BAND_DEFAULTS, **BANDS[chosen_band])
+    if not band_params['enabled']:
         chosen_band = choice(list(filter(lambda b: BANDS[b]["enabled"], BANDS)))
 
     print(f"hopping to {chosen_band}m band ({BANDS[chosen_band]['frequency']}c)")
 
     rig.set_mode(4, 700)
     rig.set_freq(Hamlib.RIG_VFO_A, BANDS[chosen_band]["frequency"])
+    rig.set_level("AF", 0.0)
+    rig.set_level("AGC", 2)
+    rig.set_level("ATT", 1 if band_params.get("attenuator") else 0)
+    rig.set_level("PREAMP", 10 if band_params.get("preamp") else 0)
+    rig.set_level("RF", (1 + band_params.get("gain", 50)) / 100)
+
+
+
 
 
 def decode_thread_main(recordings_queue):
@@ -190,7 +206,7 @@ def upload_spots(recording=None, spotfile="wspr_spots.txt"):
         print("no spots")
         return True
     files = {'allmept': open(f"{DATA_DIR}/{spotfile}", 'r')}
-    params = {'call': CALL, 'grid': GRID, 'version': 'x6w-0.2.1'}
+    params = {'call': CALL, 'grid': GRID, 'version': 'x6w-0.7.1'}
     response = None
     try:
         response = requests.post('http://wsprnet.org/post', files=files, params=params)
