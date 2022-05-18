@@ -41,7 +41,7 @@ This will take over an hour and several dozen gigabytes of disk space.
 * Hamlib and tty0tty are included for loopback control. (See spotter loop 
   script for details, towards the top).
 * Set the `X6100_SDCARD_DEV` environment variable to the SD card device and
-  the build root will update its second partition with the new rootfs in the 
+  the buildroot will update its second partition with the new rootfs in the 
   post image step. (See `br2_external/build/post_image.sh` for details.)
 * The kernel built in the buildroot will boot, but will not drive the display
   as panel drivers are not available. The post-build step replaces the built
