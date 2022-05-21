@@ -22,3 +22,9 @@ set httpd port 2812 and
     allow localhost
     allow admin:monit
 __EOF__
+
+cat >>$TARGET_DIR/etc/ssh/sshd_config <<__EOF__
+PermitRootLogin yes
+PasswordAuthentication yes
+PermitEmptyPasswords yes
+__EOF__
