@@ -2,6 +2,7 @@
 #include <QThread>
 #include <QString>
 #include <QScreen>
+#include <QRect>
 #include <QMessageBox>
 #include <QApplication>
 #include <QLabel>
@@ -45,7 +46,10 @@ bool Injection::screenshotRequested(QString filename)
 	if (!screen)
 		return false;
 
-	QPixmap pixmap = screen->grabWindow(0);
+	QRect geo = screen->geometry();
+
+	QPixmap pixmap = screen->grabWindow(0, geo.y(), geo.x(), geo.height(), geo.width());
+
 	if (!pixmap)
 		return false;
 
@@ -63,9 +67,11 @@ void Injection::injectionThreadMoved(QThread *newThread)
 		this->lblTxf->show();
 	}
 
-	this->tmrTestFlash = new QTimer(this);
-	connect(this->tmrTestFlash, &QTimer::timeout, this, &Injection::testFlashTimerExpired);
-	this->tmrTestFlash->start(1000);
+	if (NULL == std::getenv("QINJ_DONTFLASH_TEXT")) {
+		this->tmrTestFlash = new QTimer(this);
+		connect(this->tmrTestFlash, &QTimer::timeout, this, &Injection::testFlashTimerExpired);
+		this->tmrTestFlash->start(1000);
+	}
 }
 
 void Injection::testFlashTimerExpired()
