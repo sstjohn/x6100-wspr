@@ -7,7 +7,7 @@
 ## Installation Overview
 
 1. Prepare a bootable SD card.
-2. Unpack the root filesystem to the SD card.
+2. Unpack [the root filesystem](https://github.com/sstjohn/x6100-wspr/releases/download/v0.7.1/rootfs-v0.7.1.tar.xz) to the SD card.
 2. Edit CALL and GRID toward the top of `/root/spotter-loop.py`.
 3. (optional) Edit BANDS or HOPPING\_SCHEDULE to taste.
 
