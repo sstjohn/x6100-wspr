@@ -1,0 +1,11 @@
+config BR2_PACKAGE_QINJ
+        bool "qinj"
+        depends on BR2_PACKAGE_QT5
+	depends on BR2_PACKAGE_PYTHON3
+	select BR2_PACKAGE_QINJ_CONSOLE
+	select BR2_PACKAGE_LIBQINJ
+
+if BR2_PACKAGE_QINJ
+  source "$BR2_EXTERNAL_X6100_WSPR_PATH/package/qinj/libqinj/Config.in"
+  source "$BR2_EXTERNAL_X6100_WSPR_PATH/package/qinj/qinj-console/Config.in"
+endif

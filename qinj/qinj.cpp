@@ -33,9 +33,11 @@ const char *Injection::getTestText()
 	return retVal;
 }
 
-void Injection::messageBoxNeedsShowing(QString txt)
+void Injection::messageBoxRequested(
+	QString txt = "test")
 {
 	QMessageBox msgBox;
+	msgBox.setWindowTitle("messagebox");
 	msgBox.setText(txt);
 	msgBox.exec();
 }
@@ -95,7 +97,7 @@ void InjectionThread::run()
 void IPythonThread::run()
 {
 	Py_Initialize();
-	PyRun_SimpleString("from IPython import embed; embed()");
+	PyRun_SimpleString("import qinj_console; qinj_console.run()");
 	Py_Finalize();
 	QApplication::quit();
 }
