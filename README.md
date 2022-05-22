@@ -53,3 +53,5 @@ This will take over an hour and several dozen gigabytes of disk space.
   cd /usr/app_qt
   LD_PRELOAD=libqinj.so.1.0.0 ./x6100_ui_v100
   ```
+  Or set `X6100_DEFAULT_PRELOAD` in the buildroot and post_build.sh will inject 
+  the dependency using patchelf.
