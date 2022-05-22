@@ -47,11 +47,6 @@ This will take over an hour and several dozen gigabytes of disk space.
   as panel drivers are not available. The post-build step replaces the built
   kernel and modules with those from Xiegu's April 2022 firmware in order to 
   make the screen work.
-* Demo GUI injection library is included:
-  ```
-  monit stop x6100_ui_v100 
-  cd /usr/app_qt
-  LD_PRELOAD=libqinj.so.1.0.0 ./x6100_ui_v100
-  ```
-  Or set `X6100_DEFAULT_PRELOAD` in the buildroot and post_build.sh will inject 
-  the dependency using patchelf.
+* Demo GUI injection library is injected by default as of v0.8. To preinject
+  a previous or custom release, set the LD_PRELOAD environment variable to 
+  libqinj.so.1.0.0 and export it prior to running /usr/app_qt/x6100_ui_v100.
