@@ -4,12 +4,18 @@
 #include <QScreen>
 #include <QRect>
 #include <QMessageBox>
+#include <QKeyEvent>
 #include <QApplication>
 #include <QLabel>
 #include "qinj.h"
 
 extern "C" {
 #include <Python.h> 
+}
+
+void InjectedMessageBox::keyPressEvent(QKeyEvent *e)
+{
+	this->done(0);
 }
 
 Injection *injection = 0;
@@ -36,7 +42,7 @@ const char *Injection::getTestText()
 void Injection::messageBoxRequested(
 	QString txt = "test")
 {
-	QMessageBox msgBox;
+	InjectedMessageBox msgBox;
 	msgBox.setWindowTitle("messagebox");
 	msgBox.setText(txt);
 	msgBox.exec();

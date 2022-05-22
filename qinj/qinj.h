@@ -5,8 +5,18 @@
 #include <QThread>
 #include <QString>
 #include <QScreen>
+#include <QMessageBox>
 #include <QLabel>
+#include <QKeyEvent>
 #include <QApplication>
+
+class InjectedMessageBox : public QMessageBox
+{
+	Q_OBJECT
+
+protected:
+	void keyPressEvent(QKeyEvent *e);
+};
 
 class InjectionThread : public QThread 
 {
