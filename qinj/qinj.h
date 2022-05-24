@@ -10,6 +10,17 @@
 #include <QKeyEvent>
 #include <QApplication>
 
+class AppButtonWatcher : public QObject
+{
+	Q_OBJECT
+public:
+	AppButtonWatcher(QObject *);
+Q_SIGNALS:
+	void appsMenuShowing();
+protected:
+	bool eventFilter(QObject *obj, QEvent *event) override;
+};
+
 class InjectedMessageBox : public QMessageBox
 {
 	Q_OBJECT
@@ -41,9 +52,12 @@ class Injection : public QObject
 
 private:
 	QMetaObject::Connection threadMovedConnection;
+	QMetaObject::Connection wsprButtonConnection;
+
 	QLabel *lblTxf = 0;
 	QTimer *tmrTestFlash = 0;
 	const char *getTestText();
+	QWidget *topLevelWidget = 0;
 
 public: 
         Injection(QObject *parent = 0);
@@ -53,5 +67,6 @@ public Q_SLOTS:
 	void testFlashTimerExpired();
 	bool screenshotRequested(QString);
 	void messageBoxRequested(QString);
+	void appsMenuShowing();
 };
 #endif

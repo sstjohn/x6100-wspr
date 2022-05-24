@@ -7,10 +7,30 @@
 #include <QKeyEvent>
 #include <QApplication>
 #include <QLabel>
+#include <QDebug>
+#include <QPushButton>
 #include "qinj.h"
 
 extern "C" {
 #include <Python.h> 
+}
+
+
+AppButtonWatcher::AppButtonWatcher(QObject *parent = 0) :
+	QObject(parent) {}
+
+bool AppButtonWatcher::eventFilter(QObject *obj, QEvent *event)
+{	
+	bool result = QObject::eventFilter(obj, event);
+	if (event->type() == QEvent::KeyPress) {
+		QKeyEvent *keyEvent = static_cast<QKeyEvent *>(event);
+		if (keyEvent->modifiers() & Qt::ControlModifier) {
+			if (keyEvent->key() == Qt::Key_2) {
+				Q_EMIT appsMenuShowing();
+			}
+		}
+	} 
+	return result;
 }
 
 void InjectedMessageBox::keyPressEvent(QKeyEvent *e)
@@ -66,20 +86,24 @@ bool Injection::screenshotRequested(QString filename)
 
 void Injection::injectionThreadMoved(QThread *newThread)
 {
-	QWidget *topLevelWidget = QApplication::topLevelWidgets().back();
-	this->setParent(topLevelWidget);
+	topLevelWidget = QApplication::topLevelWidgets().back();
+	setParent(topLevelWidget);
 	
-	this->lblTxf = topLevelWidget->findChild<QLabel *>("labelFullbandTxe");
-	if (this->lblTxf) {
-		this->lblTxf->setText(this->getTestText());
-		this->lblTxf->show();
+	lblTxf = topLevelWidget->findChild<QLabel *>("labelFullbandTxe");
+	if (lblTxf) {
+		lblTxf->setText(getTestText());
+		lblTxf->show();
 	}
 
 	if (NULL == std::getenv("QINJ_DONTFLASH_TEXT")) {
-		this->tmrTestFlash = new QTimer(this);
+		tmrTestFlash = new QTimer(this);
 		connect(this->tmrTestFlash, &QTimer::timeout, this, &Injection::testFlashTimerExpired);
-		this->tmrTestFlash->start(1000);
+		tmrTestFlash->start(1000);
 	}
+
+	AppButtonWatcher *appButtonWatcher = new AppButtonWatcher(this);
+	topLevelWidget->installEventFilter(appButtonWatcher);
+	connect(appButtonWatcher, &AppButtonWatcher::appsMenuShowing, this, &Injection::appsMenuShowing, Qt::QueuedConnection);
 }
 
 void Injection::testFlashTimerExpired()
@@ -89,6 +113,18 @@ void Injection::testFlashTimerExpired()
 	else
 		this->lblTxf->hide();
 }	
+
+void Injection::appsMenuShowing()
+{
+	QPushButton *f5 = topLevelWidget->findChild<QPushButton *>("pushButton_F5");
+	f5->setIcon(QIcon());
+	f5->setText("WSPR");	
+	if (!wsprButtonConnection)
+		wsprButtonConnection = connect(f5, &QPushButton::clicked, [=]() {
+			if (f5->text() == "WSPR")
+				messageBoxRequested("You pressed the WSPR button!");
+		});		
+}
 
 void InjectionThread::run()
 {
