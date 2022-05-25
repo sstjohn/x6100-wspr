@@ -10,11 +10,15 @@
 #include <QKeyEvent>
 #include <QApplication>
 
+#include "XWsprWidget.h"
+
 class AppButtonWatcher : public QObject
 {
 	Q_OBJECT
 public:
-	AppButtonWatcher(QObject *);
+	AppButtonWatcher(QObject *parent = 0);
+private:
+	XWsprWidget *wsprWidget;
 Q_SIGNALS:
 	void appsMenuShowing();
 protected:
@@ -58,9 +62,11 @@ private:
 	QTimer *tmrTestFlash = 0;
 	const char *getTestText();
 	QWidget *topLevelWidget = 0;
+	XWsprWidget *wsprWidget = 0;
 
 public: 
         Injection(QObject *parent = 0);
+	XWsprWidget *getWsprWidget();
 
 public Q_SLOTS:
 	void injectionThreadMoved(QThread *newThread);
@@ -68,5 +74,6 @@ public Q_SLOTS:
 	bool screenshotRequested(QString);
 	void messageBoxRequested(QString);
 	void appsMenuShowing();
+	void tryLabel(QString);
 };
 #endif

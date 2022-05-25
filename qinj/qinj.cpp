@@ -5,6 +5,7 @@
 #include <QRect>
 #include <QMessageBox>
 #include <QKeyEvent>
+#include <QWheelEvent>
 #include <QApplication>
 #include <QLabel>
 #include <QDebug>
@@ -15,23 +16,41 @@ extern "C" {
 #include <Python.h> 
 }
 
-
-AppButtonWatcher::AppButtonWatcher(QObject *parent = 0) :
-	QObject(parent) {}
+AppButtonWatcher::AppButtonWatcher(QObject *parent) : QObject(parent) 
+{
+	wsprWidget = static_cast<Injection *>(parent)->getWsprWidget();
+}
 
 bool AppButtonWatcher::eventFilter(QObject *obj, QEvent *event)
 {	
-	bool result = QObject::eventFilter(obj, event);
 	if (event->type() == QEvent::KeyPress) {
 		QKeyEvent *keyEvent = static_cast<QKeyEvent *>(event);
-		if (keyEvent->modifiers() & Qt::ControlModifier) {
-			if (keyEvent->key() == Qt::Key_2) {
-				Q_EMIT appsMenuShowing();
+		if (wsprWidget->isHidden()) {
+			if (keyEvent->modifiers() & Qt::ControlModifier) {
+				if (keyEvent->key() == Qt::Key_2) {
+					Q_EMIT appsMenuShowing();
+				}
 			}
+		} else {
+			if (keyEvent->key() != Qt::Key_F5)	
+				return true;
+		}
+	} else if (event->type() == QEvent::KeyRelease) {
+		QKeyEvent *keyEvent = static_cast<QKeyEvent *>(event);
+		if (!wsprWidget->isHidden() && keyEvent->key() != Qt::Key_F5)
+			return true;
+	} else if (event->type() == QEvent::Wheel) {
+		if (!wsprWidget->isHidden()) {
+			QWheelEvent *wheelEvent = static_cast<QWheelEvent *>(event);
+			if (!wheelEvent->modifiers()) {
+				wsprWidget->scrollTable(wheelEvent->angleDelta().y() > 0);
+			}
+			return true;
 		}
 	} 
-	return result;
+	return QObject::eventFilter(obj, event);
 }
+
 
 void InjectedMessageBox::keyPressEvent(QKeyEvent *e)
 {
@@ -101,10 +120,14 @@ void Injection::injectionThreadMoved(QThread *newThread)
 		tmrTestFlash->start(1000);
 	}
 
+	wsprWidget = new XWsprWidget(topLevelWidget);
+
 	AppButtonWatcher *appButtonWatcher = new AppButtonWatcher(this);
-	topLevelWidget->installEventFilter(appButtonWatcher);
+	QApplication::instance()->installEventFilter(appButtonWatcher);
 	connect(appButtonWatcher, &AppButtonWatcher::appsMenuShowing, this, &Injection::appsMenuShowing, Qt::QueuedConnection);
 }
+
+XWsprWidget *Injection::getWsprWidget() { return this->wsprWidget; }
 
 void Injection::testFlashTimerExpired()
 {
@@ -122,7 +145,13 @@ void Injection::appsMenuShowing()
 	if (!wsprButtonConnection)
 		wsprButtonConnection = connect(f5, &QPushButton::clicked, [=]() {
 			if (f5->text() == "WSPR")
-				messageBoxRequested("You pressed the WSPR button!");
+			{
+				if (wsprWidget->isHidden()) {
+					wsprWidget->show();
+					wsprWidget->raise();
+				} else
+					wsprWidget->hide();
+			}
 		});		
 }
 

@@ -24,6 +24,8 @@ from math import ceil
 from queue import Queue
 import os
 from random import choice
+import socket
+import stat
 from subprocess import Popen
 import sys
 from threading import Thread
@@ -198,15 +200,35 @@ def decode_thread_main(recordings_queue):
             return
         os.system(f"time wsprd {WSPRD_ARGS} -f {frequency} {next_recording}")
         os.system(f"rm {next_recording}")
+        add_spots_to_ui(next_recording)
         upload_spots(next_recording)
 
+def add_spots_to_ui(recording):
+    if os.path.getsize(f"{DATA_DIR}/wspr_spots.txt") == 0:
+        return
+    try:
+        if not stat.S_ISSOCK(os.stat("/tmp/wspr").st_mode):
+            return
+    except FileNotFoundError:
+        return
+    with socket.socket(socket.AF_UNIX, socket.SOCK_STREAM) as s:
+        try:
+            s.connect("/tmp/wspr")
+        except FileNotFoundError:
+            return
+        with open(f"{DATA_DIR}/wspr_spots.txt", "r") as spotfile:
+            for line in spotfile.readlines():
+                parts = line.split(" ")
+                parts = list(filter(None, parts))
+                msg = "\t".join([f"{parts[0]} {parts[1]}", parts[3], *parts[5:9]]) + "\n"
+                s.send(msg.encode("utf-8"))
 
 def upload_spots(recording=None, spotfile="wspr_spots.txt"):
     if os.path.getsize(spotfile) == 0:
         print("no spots")
         return True
     files = {'allmept': open(f"{DATA_DIR}/{spotfile}", 'r')}
-    params = {'call': CALL, 'grid': GRID, 'version': 'x6w-0.7.1'}
+    params = {'call': CALL, 'grid': GRID, 'version': 'x6w-0.8.0'}
     response = None
     try:
         response = requests.post('http://wsprnet.org/post', files=files, params=params)
