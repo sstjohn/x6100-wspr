@@ -149,8 +149,11 @@ void Injection::appsMenuShowing()
 				if (wsprWidget->isHidden()) {
 					wsprWidget->show();
 					wsprWidget->raise();
-				} else
+					f5->setFocus();
+				} else {
 					wsprWidget->hide();
+					f5->clearFocus();
+				}
 			}
 		});		
 }
