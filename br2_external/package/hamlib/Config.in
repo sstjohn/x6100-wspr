@@ -1,4 +1,4 @@
 config BR2_PACKAGE_HAMLIB
-        bool "hamlib"
-        help
-               hamlib package 
+	bool "hamlib"
+	help
+	  hamlib library and utils

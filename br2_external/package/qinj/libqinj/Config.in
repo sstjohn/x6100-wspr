@@ -1,2 +1,2 @@
 config BR2_PACKAGE_LIBQINJ
-bool "libqinj"
+	bool "libqinj"

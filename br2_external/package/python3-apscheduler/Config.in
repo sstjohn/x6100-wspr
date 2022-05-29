@@ -1,6 +1,6 @@
 config BR2_PACKAGE_PYTHON3_APSCHEDULER
-        bool "python3-apscheduler"
+	bool "python3-apscheduler"
 	depends on BR2_PACKAGE_PYTHON3
 	select BR2_PACKAGE_PYTHON3_SETUPTOOLS
-        help
-                apscheduler for python
+	help
+	  apscheduler for python

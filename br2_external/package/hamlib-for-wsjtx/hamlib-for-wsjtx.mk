@@ -1,3 +1,9 @@
+################################################################################
+#
+#  hamlib-for-wsjtx
+#
+################################################################################
+
 HAMLIB_FOR_WSJTX_SITE = git://git.code.sf.net/u/bsomervi/hamlib
 HAMLIB_FOR_WSJTX_VERSION = origin/integration
 HAMLIB_FOR_WSJTX_SITE_METHOD = git

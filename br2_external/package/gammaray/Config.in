@@ -1,5 +1,5 @@
 config BR2_PACKAGE_GAMMARAY
-        bool "gammaray"
-        depends on BR2_PACKAGE_QT5
-        help
-          GammaRay Qt introspection probe.
+	bool "gammaray"
+	depends on BR2_PACKAGE_QT5
+	help
+	  GammaRay Qt introspection probe.

@@ -1,3 +1,7 @@
+CMakeLists.txt: don't look for separate threaded fftw
+
+Signed-off-by: Saul St John <saul.stjohn@gmail.com>
+
 --- a/CMakeLists.txt
 +++ b/CMakeLists.txt
 @@ -872,7 +872,7 @@

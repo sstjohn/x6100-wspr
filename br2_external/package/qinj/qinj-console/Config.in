@@ -1,2 +1,2 @@
 config BR2_PACKAGE_QINJ_CONSOLE
-bool "qinj-console"
+	bool "qinj-console"

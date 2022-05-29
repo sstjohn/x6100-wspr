@@ -1,7 +1,7 @@
 config BR2_PACKAGE_WSJTX
-        bool "WSJT-X"
-	select BR2_PACKAGE_HAMLIB_FOR_WSJTX
+	bool "WSJT-X"
 	depends on BR2_PACKAGE_FFTW_SINGLE
 	depends on BR2_PACKAGE_BOOST_LOG
-        help
-               wsprd (from WSTJ-X) 
+	select BR2_PACKAGE_HAMLIB_FOR_WSJTX
+	help
+	  wsprd (from WSTJ-X)
