@@ -29,6 +29,6 @@ PasswordAuthentication yes
 PermitEmptyPasswords yes
 __EOF__
 
-if [ "x$X6100_DEFAULT_PRELOAD" != "x" ]; then
+if [ "x$X6100_DEFAULT_PRELOAD" = "xYES" ]; then
   patchelf --add-needed libqinj.so.1.0.0 $TARGET_DIR/usr/app_qt/x6100_ui_v100
 fi

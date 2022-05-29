@@ -1,3 +1,25 @@
+comment "image and build configuration"
+
+config BR2_EXTERNAL_X6100_SDCARD_PATH
+	string "SD card block device to update (e.g. /dev/sdc)"
+	default ""
+
+config BR2_EXTERNAL_X6100_SDCARD_CLEAN
+	bool "Wipe SD card before update"
+	depends on BR2_EXTERNAL_X6100_SDCARD_PATH != ""
+
+config BR2_EXTERNAL_X6100_PREINJECT_BY_DEFAULT
+	bool "Preinject libqinj to x6100_ui_v100 with patchelf"
+	depends on BR2_PACKAGE_LIBQINJ
+	default y
+
+config BR2_EXTERNAL_X6100_WSPR_BANDHOP_BY_DEFAULT
+	bool "WSPR band hopping enabled by default"
+	depends on BR2_PACKAGE_TTY0TTY
+	default y
+
+comment "packages"
+
 source "$BR2_EXTERNAL_X6100_WSPR_PATH/package/tty0tty/Config.in"
 source "$BR2_EXTERNAL_X6100_WSPR_PATH/package/hamlib/Config.in"
 source "$BR2_EXTERNAL_X6100_WSPR_PATH/package/hamlib-for-wsjtx/Config.in"

@@ -189,10 +189,6 @@ def hop_bands(rig):
     rig.set_level("PREAMP", 10 if band_params.get("preamp") else 0)
     rig.set_level("RF", (1 + band_params.get("gain", 50)) / 100)
 
-
-
-
-
 def decode_thread_main(recordings_queue):
     while True:
         next_recording, frequency = recordings_queue.get()

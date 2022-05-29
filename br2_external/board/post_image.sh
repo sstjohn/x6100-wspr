@@ -7,6 +7,8 @@ if [ "x$X6100_SDCARD_DEV" = "x" ]; then
 fi
 echo
 
+X6100_SDCARD_DEV=`echo $X6100_SDCARD_DEV | tr -d '"'`
+
 if [ ! -b $X6100_SDCARD_DEV ] || \
    [ $(cat /sys/block/`basename $X6100_SDCARD_DEV`/size) -eq 0 ]; then
   echo 'SD card not present'
