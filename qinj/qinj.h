@@ -12,6 +12,8 @@
 
 #include "XWsprWidget.h"
 
+void __attribute__((constructor)) qinj_initialize();
+
 class AppButtonWatcher : public QObject
 {
 	Q_OBJECT

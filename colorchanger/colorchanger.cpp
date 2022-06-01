@@ -6,12 +6,39 @@
 #include <QDebug>
 #include <QTextFrame>
 #include <QTextCursor>
+#include <QPushButton>
+#include <QPainter>
 
 #include "colorchanger.h"
 
-
 ColorChangerInjection *injection = 0;
 ColorChangerInjectionThread *injectionThread = 0;
+
+void ColorChangerInjection::fButtonNeedsUpdate(QPushButton *pb)
+{
+	if (pb) {
+		this->buttonColorChanger(pb);
+		return;
+	}
+	for (const char *name : {"pushButton_F1", "pushButton_F2", "pushButton_F3", "pushButton_F4", "pushButton_F5"}) {
+		pb = topLevelWidget->findChild<QPushButton *>(name);
+		this->buttonColorChanger(pb);
+	}
+}
+
+void ColorChangerInjection::buttonColorChanger(QPushButton *pb)
+{
+	QPixmap orig = pb->icon().pixmap(153, 51);
+	QImage newImage = QImage(orig.size(), QImage::Format_ARGB32_Premultiplied);
+	QPainter *painter = new QPainter();
+
+	newImage.fill(Qt::white);
+	painter->begin(&newImage);
+	painter->setCompositionMode(QPainter::CompositionMode_DestinationIn);
+	painter->drawPixmap(0, 0, orig);
+	painter->end();
+	pb->setIcon(QIcon(QPixmap::fromImage(newImage)));
+}
 
 void ColorChangerInjection::volLblTextChanged()
 {
@@ -61,11 +88,11 @@ void ColorChangerInjectionThread::run()
 	Q_EMIT injectionThreadMoved();
 }
 
-static bool __initialized = 0;
+static bool __colorchanger_initialized = 0;
 
-void initialize()
+void colorchanger_initialize()
 {
-	if (!__atomic_test_and_set(&__initialized, 0)) {
+	if (!__atomic_test_and_set(&__colorchanger_initialized, 0)) {
 		injectionThread = new ColorChangerInjectionThread();
 		injectionThread->start();
 	}

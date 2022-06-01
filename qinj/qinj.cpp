@@ -176,13 +176,11 @@ void IPythonThread::run()
 	QApplication::quit();
 }
 
-static bool __initialized = false;
+static bool __qinj_initialized = false;
 
-__attribute__((constructor)) 
-void initialize()
+void qinj_initialize()
 {
-	if (!__initialized) {
-		__initialized = true;
+	if (!__atomic_test_and_set(&__qinj_initialized, 0)) {
 		bool iPythonWanted = NULL != std::getenv("QINJ_CONSOLE");
 		injectionThread = new InjectionThread();
 		injectionThread->start();
