@@ -14,15 +14,36 @@
 ColorChangerInjection *injection = 0;
 ColorChangerInjectionThread *injectionThread = 0;
 
-void ColorChangerInjection::fButtonNeedsUpdate(QPushButton *pb)
+bool ColorChangerInjection::eventFilter(QObject *obj, QEvent *event)
 {
-	if (pb) {
-		this->buttonColorChanger(pb);
-		return;
-	}
+	static bool refreshOnMfk = false;
+	
+        if (event->type() == QEvent::KeyPress) {
+                QKeyEvent *keyEvent = static_cast<QKeyEvent *>(event);
+		if (keyEvent->modifiers() & Qt::ControlModifier) {
+			if (keyEvent->key() == Qt::Key_3 || 
+			    keyEvent->key() == Qt::Key_4 || 
+			    keyEvent->key() == Qt::Key_5) {
+				refreshOnMfk = true;
+				Q_EMIT fButtonsNeedUpdate();
+			} else {
+				refreshOnMfk = false;
+			} 
+		}
+        } else if (refreshOnMfk && (event->type() == QEvent::Wheel)) {
+		QWheelEvent *wheelEvent = static_cast<QWheelEvent *>(event);
+		if (!wheelEvent->modifiers()) {
+			Q_EMIT fButtonsNeedUpdate();
+		}
+        } 
+	return QObject::eventFilter(obj, event);
+}
+
+void ColorChangerInjection::fButtonsColorChange()
+{
 	for (const char *name : {"pushButton_F1", "pushButton_F2", "pushButton_F3", "pushButton_F4", "pushButton_F5"}) {
-		pb = topLevelWidget->findChild<QPushButton *>(name);
-		this->buttonColorChanger(pb);
+		QPushButton *pb = topLevelWidget->findChild<QPushButton *>(name);
+		buttonColorChanger(pb);
 	}
 }
 
@@ -40,7 +61,7 @@ void ColorChangerInjection::buttonColorChanger(QPushButton *pb)
 	pb->setIcon(QIcon(QPixmap::fromImage(newImage)));
 }
 
-void ColorChangerInjection::volLblTextChanged()
+void ColorChangerInjection::volLblTextColorChange()
 {
 	for (QTextBlock block = doc->begin(); block != doc->end(); block = block.next()) {
 		for (QTextBlock::iterator it = block.begin(); !(it.atEnd()); ++it) {
@@ -66,11 +87,14 @@ void ColorChangerInjection::injectionThreadMoved()
 
 	QLabel *lblVol = topLevelWidget->findChild<QLabel *>("labelVolum");
 	doc = lblVol->findChild<QTextDocument *>("");
-	connect(doc, &QTextDocument::contentsChanged, this, &ColorChangerInjection::volLblTextChanged);
+	connect(doc, &QTextDocument::contentsChanged, this, &ColorChangerInjection::volLblTextColorChange);
+	connect(this, &ColorChangerInjection::fButtonsNeedUpdate, this, &ColorChangerInjection::fButtonsColorChange, Qt::QueuedConnection);
+	QApplication::instance()->installEventFilter(this);
 }
 
 ColorChangerInjection::ColorChangerInjection(QObject *parent) : QObject(parent) 
 {
+	setObjectName("colorchanger");
 	this->threadMovedConnection = connect(QThread::currentThread(),
                 SIGNAL(injectionThreadMoved()),
                 this,

@@ -31,12 +31,19 @@ private:
 	QWidget *topLevelWidget = 0;
 	QTextDocument *doc = 0;
 	void buttonColorChanger(QPushButton *pb);
+
+protected:
+	bool eventFilter(QObject *obj, QEvent *event);
+	
 public: 
         ColorChangerInjection(QObject *parent = 0);
 
+Q_SIGNALS:
+	void fButtonsNeedUpdate();
+
 public Q_SLOTS:
 	void injectionThreadMoved();
-	void volLblTextChanged();
-	void fButtonNeedsUpdate(QPushButton *b = 0);
+	void volLblTextColorChange();
+	void fButtonsColorChange();
 };
 #endif

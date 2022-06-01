@@ -63,6 +63,8 @@ IPythonThread *iPythonThread = 0;
 
 Injection::Injection(QObject *parent) : QObject(parent) 
 {
+	setObjectName("qinj");
+
 	this->threadMovedConnection = connect(QThread::currentThread(),
 		SIGNAL(injectionThreadMoved(QThread *)),
 		this,

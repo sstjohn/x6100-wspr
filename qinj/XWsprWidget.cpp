@@ -38,6 +38,8 @@ void XWsprWidget::wsprConnectionReceived()
 XWsprWidget::XWsprWidget(QWidget *parent) :
 	QWidget(parent)
 {
+	setObjectName("XWsprWidget");
+
 	setGeometry(50, 50, 700, 375);
 	setAutoFillBackground(true);
 	move(parent->rect().center() - this->rect().center());
