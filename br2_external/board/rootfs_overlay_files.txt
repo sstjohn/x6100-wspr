@@ -1,4 +1,3 @@
-./lib/modules/
 ./usr/share/emmc_sources/sun8i-r16-x6100.dtb
 ./usr/share/emmc_sources/boot.scr
 ./usr/share/emmc_sources/etc/udev/rules.d/11-sd-card-auto-mount.rules
@@ -139,7 +138,6 @@
 ./usr/firmware/X6100_BBFW_20220410001.xgf
 ./usr/app_qt/x6100_ui_v100
 ./boot/sun8i-r16-x6100.dtb
-./boot/zImage
 ./etc/passwd
 ./etc/alsa/conf.d/20-bluealsa.conf
 ./etc/hostname

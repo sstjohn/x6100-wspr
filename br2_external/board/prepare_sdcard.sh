@@ -69,9 +69,9 @@ dd if=${TARGET_DIR}/usr/share/emmc_sources/u-boot-sunxi-with-spl.bin of=${X6100_
 
 mount_point=`mktemp --dir`
 mount ${X6100_SDCARD_DEV}${PART_PREFIX}1 $mount_point
-cp -f ${TARGET_DIR}/usr/share/emmc_sources/zImage ${mount_point}
+#cp -f ${TARGET_DIR}/usr/share/emmc_sources/zImage ${mount_point}
 cp -f ${TARGET_DIR}/usr/share/emmc_sources/sun8i-r16-x6100.dtb ${mount_point}
-mkimage -C none -A arm -T script -d ${BR2_EXTERNAL_X6100_WSPR_PATH}/board/boot.cmd ${mount_point}/boot.scr
+${HOST_DIR}/bin/mkimage -C none -A arm -T script -d ${BR2_EXTERNAL_X6100_WSPR_PATH}/board/boot.cmd ${mount_point}/boot.scr
 umount ${mount_point}
 rmdir ${mount_point}
 

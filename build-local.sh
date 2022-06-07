@@ -4,6 +4,10 @@
 # for it. It produces a workalike rootfs with bonus functionality and 
 # optionally updates an sdcard with it.
 
+if which apt >/dev/null; then
+	sudo apt install --no-install-recommends libmpc-dev libgmp-dev cmake libncurses-dev asciidoc asciidoctor
+fi
+
 if [ ! -e buildroot-2020.02.9.tar.gz ]; then
   wget https://buildroot.org/downloads/buildroot-2020.02.9.tar.gz
 fi

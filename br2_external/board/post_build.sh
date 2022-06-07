@@ -10,8 +10,8 @@ if [ ! -e $BR2_DL_DIR/$ZIP_FILENAME ]; then
   wget -O $BR2_DL_DIR/$ZIP_FILENAME $ZIP_SITE/$ZIP_FILENAME
 fi
 
-rm -rf $TARGET_DIR/lib/modules/5.8.9/kernel
-rm $TARGET_DIR/lib/modules/5.8.9/modules.*
+#rm -rf $TARGET_DIR/lib/modules/5.8.9/kernel
+#rm $TARGET_DIR/lib/modules/5.8.9/modules.*
 unzip -p $BR2_DL_DIR/$ZIP_FILENAME $IMG_FILE | dd bs=1024 skip=529608 | tar xC $TARGET_DIR $OVERLAY_FILES
 cp -r $TARGET_DIR/usr/share/emmc_sources/etc $TARGET_DIR
 

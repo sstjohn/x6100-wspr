@@ -1,5 +1,6 @@
 #!/bin/sh
 
+X6100_SDCARD_DEV=`echo $X6100_SDCARD_DEV | tr -d '"'`
 echo -n X6100_SDCARD_DEV is $X6100_SDCARD_DEV
 if [ "x$X6100_SDCARD_DEV" = "x" ]; then
   echo ' not given'
@@ -7,7 +8,6 @@ if [ "x$X6100_SDCARD_DEV" = "x" ]; then
 fi
 echo
 
-X6100_SDCARD_DEV=`echo $X6100_SDCARD_DEV | tr -d '"'`
 
 if [ ! -b $X6100_SDCARD_DEV ] || \
    [ $(cat /sys/block/`basename $X6100_SDCARD_DEV`/size) -eq 0 ]; then
@@ -27,6 +27,9 @@ if [ ! -b ${X6100_SDCARD_DEV}${PART_PREFIX}2 ]; then
 fi
 
 mount_point=`mktemp --dir`
+sudo mount ${X6100_SDCARD_DEV}${PART_PREFIX}1 $mount_point
+sudo cp $1/zImage $mount_point
+sudo umount $mount_point
 sudo mount ${X6100_SDCARD_DEV}${PART_PREFIX}2 $mount_point
 sudo tar xCf $mount_point $1/rootfs.tar
 sudo umount $mount_point
