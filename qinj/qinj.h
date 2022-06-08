@@ -76,6 +76,5 @@ public Q_SLOTS:
 	bool screenshotRequested(QString);
 	void messageBoxRequested(QString);
 	void appsMenuShowing();
-	void tryLabel(QString);
 };
 #endif

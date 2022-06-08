@@ -23,7 +23,6 @@ private:
 	QTableView *qtv;
 
 public Q_SLOTS:
-	void wsprReceived(QString, QString, QString, QString, QString, QString);
 	void wsprReceived(QStringList);
 	void wsprConnectionReceived();
 
