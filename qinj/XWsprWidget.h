@@ -1,3 +1,6 @@
+#ifndef _XWSPRWIDGET_H_
+#define _XWSPRWIDGET_H_
+
 #include <QStandardItemModel>
 #include <QWidget>
 #include <QObject>
@@ -27,3 +30,5 @@ public Q_SLOTS:
 	void wsprConnectionReceived();
 
 };
+
+#endif

@@ -40,7 +40,7 @@ XWsprWidget::XWsprWidget(QWidget *parent) :
 {
 	setObjectName("XWsprWidget");
 
-	setGeometry(50, 50, 700, 375);
+	setGeometry(0, 176, 800, 250);
 	setAutoFillBackground(true);
 	move(parent->rect().center() - this->rect().center());
 
