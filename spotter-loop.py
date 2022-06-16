@@ -210,11 +210,11 @@ def add_spots_to_ui(recording):
 
     with open(f"{DATA_DIR}/wspr_spots.txt", "r") as spotfile:
         for line in spotfile.readlines():
-	    parts = line.split(" ")
-	    parts = list(filter(None, parts))
-	    injection_proxy.wsprReceived(
+            parts = line.split(" ")
+            parts = list(filter(None, parts))
+            injection_proxy.wsprReceived(
                 f"{parts[0]} {parts[1]}", 
-                parts[3], *parts[5:9]])
+                parts[3], *parts[5:9]
             )
 
 def upload_spots(recording=None, spotfile="wspr_spots.txt"):
