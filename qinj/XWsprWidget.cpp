@@ -3,15 +3,23 @@
 #include <QStandardItemModel>
 #include <QTableView>
 #include <QHBoxLayout>
-#include <QDebug>
 #include <QHeaderView>
 #include <QScrollBar>
 
-void XWsprWidget::wsprReceived(QStringList data)
+void XWsprWidget::wsprReceived(const QString &time,
+		const QString &snr,
+		const QString &freq,
+		const QString &call,
+		const QString &grid,
+		const QString &power)
 {
 	QList<QStandardItem *> cols;
-	for (const auto& i : data)
-		cols << new QStandardItem(i);
+	cols << new QStandardItem(time);
+	cols << new QStandardItem(snr);
+	cols << new QStandardItem(freq);
+	cols << new QStandardItem(call);
+	cols << new QStandardItem(grid);
+	cols << new QStandardItem(power);
 	wsprStore->insertRow(0, cols);
 }
 
@@ -22,19 +30,6 @@ void XWsprWidget::scrollTable(bool up)
 	);
 }
 
-void XWsprWidget::wsprConnectionReceived()
-{
-	QLocalSocket *incoming = wsprReceiver->nextPendingConnection();
-	if (!incoming)
-		return;
-	connect(incoming, &QLocalSocket::readyRead, [=]() {
-		while (incoming->canReadLine()) {
-			const QByteArray data = incoming->readLine().trimmed();
-			wsprReceived(QString(data).split("\t"));
-		}
-	});
-}
-
 XWsprWidget::XWsprWidget(QWidget *parent) :
 	QWidget(parent)
 {
@@ -42,7 +37,6 @@ XWsprWidget::XWsprWidget(QWidget *parent) :
 
 	setGeometry(0, 176, 800, 250);
 	setAutoFillBackground(true);
-	move(parent->rect().center() - this->rect().center());
 
 	wsprStore = new QStandardItemModel(0, 6);
 	QStringList headers;
@@ -71,18 +65,5 @@ XWsprWidget::XWsprWidget(QWidget *parent) :
         layout->addWidget(qtv);
         setLayout(layout); 
 
-	QLocalServer::removeServer("wspr");
-	wsprReceiver = new QLocalServer(this);
-	if (!wsprReceiver->listen("wspr")) {
-		qWarning("Unable to start the server: %s.", wsprReceiver->errorString().toLocal8Bit().data());
-		wsprReceiver = NULL;
-		return;
-	}
-	connect(wsprReceiver, &QLocalServer::newConnection, this, &XWsprWidget::wsprConnectionReceived);
-}
-
-XWsprWidget::~XWsprWidget() 
-{
-	if (wsprReceiver)
-		wsprReceiver->close();
+	show();
 }

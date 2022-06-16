@@ -14,7 +14,7 @@ void InjectionThread::run()
 
 	QThread *appThread = QApplication::instance()->thread();
 	injection->moveToThread(appThread);
-	Q_EMIT injectionThreadMoved(appThread);
+	Q_EMIT injectionThreadMoved();
 }
 
 void IPythonThread::run()

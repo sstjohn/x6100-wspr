@@ -24,7 +24,6 @@ from math import ceil
 from queue import Queue
 import os
 from random import choice
-import socket
 import stat
 from subprocess import Popen
 import sys
@@ -34,6 +33,7 @@ from traceback import print_exc
 
 from apscheduler.schedulers.blocking import BlockingScheduler
 from apscheduler.triggers.cron import CronTrigger
+import dbus
 import Hamlib
 import requests
 
@@ -202,22 +202,20 @@ def decode_thread_main(recordings_queue):
 def add_spots_to_ui(recording):
     if os.path.getsize(f"{DATA_DIR}/wspr_spots.txt") == 0:
         return
+
     try:
-        if not stat.S_ISSOCK(os.stat("/tmp/wspr").st_mode):
-            return
-    except FileNotFoundError:
+        injection_proxy = dbus.SystemBus().get_object('lol.ssj.xwspr', '/')
+    except dbus.exceptions.DBusException:
         return
-    with socket.socket(socket.AF_UNIX, socket.SOCK_STREAM) as s:
-        try:
-            s.connect("/tmp/wspr")
-        except FileNotFoundError:
-            return
-        with open(f"{DATA_DIR}/wspr_spots.txt", "r") as spotfile:
-            for line in spotfile.readlines():
-                parts = line.split(" ")
-                parts = list(filter(None, parts))
-                msg = "\t".join([f"{parts[0]} {parts[1]}", parts[3], *parts[5:9]]) + "\n"
-                s.send(msg.encode("utf-8"))
+
+    with open(f"{DATA_DIR}/wspr_spots.txt", "r") as spotfile:
+        for line in spotfile.readlines():
+	    parts = line.split(" ")
+	    parts = list(filter(None, parts))
+	    injection_proxy.wsprReceived(
+                f"{parts[0]} {parts[1]}", 
+                parts[3], *parts[5:9]])
+            )
 
 def upload_spots(recording=None, spotfile="wspr_spots.txt"):
     if os.path.getsize(spotfile) == 0:

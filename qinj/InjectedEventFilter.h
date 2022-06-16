@@ -1,15 +1,15 @@
-#ifndef _APPBUTTONWATCHER_H_
-#define _APPBUTTONWATCHER_H_
+#ifndef _INJECTEDEVENTFILTER_H_
+#define _INJECTEDEVENTFILTER_H_
 
 #include <QEvent>
 
 #include "XWsprWidget.h"
 
-class AppButtonWatcher : public QObject
+class InjectedEventFilter : public QObject
 {
 	Q_OBJECT
 public:
-	AppButtonWatcher(QObject *parent = 0);
+	InjectedEventFilter(QObject *parent = 0);
 private:
 	XWsprWidget *wsprWidget;
 Q_SIGNALS:

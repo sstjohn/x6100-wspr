@@ -1,14 +1,16 @@
 #include <QKeyEvent>
 
-#include "AppButtonWatcher.h"
+#include <QDebug>
+
+#include "InjectedEventFilter.h"
 #include "Injection.h"
 
-AppButtonWatcher::AppButtonWatcher(QObject *parent) : QObject(parent) 
+InjectedEventFilter::InjectedEventFilter(QObject *parent) : QObject(parent) 
 {
 	wsprWidget = static_cast<Injection *>(parent)->getWsprWidget();
 }
 
-bool AppButtonWatcher::eventFilter(QObject *obj, QEvent *event)
+bool InjectedEventFilter::eventFilter(QObject *obj, QEvent *event)
 {	
 	if (event->type() == QEvent::KeyPress) {
 		QKeyEvent *keyEvent = static_cast<QKeyEvent *>(event);

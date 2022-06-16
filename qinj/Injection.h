@@ -1,14 +1,16 @@
 #ifndef _INJECTION_H_
 #define _INJECTION_H_
 
+#include <QDBusAbstractAdaptor>
 #include <QLabel>
 #include <QTimer>
 
 #include "XWsprWidget.h"
 
-class Injection : public QObject
+class Injection : public QDBusAbstractAdaptor
 {
         Q_OBJECT
+	Q_CLASSINFO("D-Bus Interface", "lol.ssj.xwspr")
 
 private:
 	QMetaObject::Connection threadMovedConnection;
@@ -25,11 +27,19 @@ public:
 	XWsprWidget *getWsprWidget();
 
 public Q_SLOTS:
-	void injectionThreadMoved(QThread *newThread);
+	void injectionThreadMoved();
 	void testFlashTimerExpired();
 	bool screenshotRequested(QString);
 	void messageBoxRequested(QString);
 	void appsMenuShowing();
+	void wsprReceived(
+		const QString &time,
+		const QString &snr,
+		const QString &freq,
+		const QString &call,
+		const QString &grid,
+		const QString &power
+	);
 };
 
 #endif

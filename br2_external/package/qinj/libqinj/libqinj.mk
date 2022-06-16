@@ -20,6 +20,7 @@ define LIBQINJ_INSTALL_STAGING_CMDS
 endef
 define LIBQINJ_INSTALL_TARGET_CMDS
 	cp -a $(@D)/*.so.* $(TARGET_DIR)/usr/lib
+	cp -a $(@D)/xwspr-dbus.conf $(TARGET_DIR)/etc/dbus-1/system.d/
 endef
 
 $(eval $(generic-package))

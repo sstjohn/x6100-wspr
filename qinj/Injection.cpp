@@ -1,24 +1,27 @@
 #include <QApplication>
+#include <QDebug>
+#include <QDBusConnection>
 #include <QPushButton>
 #include <QScreen>
+#include <QThread>
 
-#include "AppButtonWatcher.h"
+#include "InjectedEventFilter.h"
 #include "Injection.h"
 #include "InjectedMessageBox.h"
 
-Injection::Injection(QObject *parent) : QObject(parent) 
+Injection::Injection(QObject *parent) : QDBusAbstractAdaptor(parent)
 {
 	setObjectName("qinj");
 
 	this->threadMovedConnection = connect(
 		QThread::currentThread(),
-		SIGNAL(injectionThreadMoved(QThread *)),
+		SIGNAL(injectionThreadMoved()),
 		this,
-		SLOT(injectionThreadMoved(QThread *))
+		SLOT(injectionThreadMoved())
 	);
 }
 
-void Injection::injectionThreadMoved(QThread *newThread)
+void Injection::injectionThreadMoved()
 {
 	topLevelWidget = QApplication::topLevelWidgets().back();
 	setParent(topLevelWidget);
@@ -31,9 +34,21 @@ void Injection::injectionThreadMoved(QThread *newThread)
 
 	wsprWidget = new XWsprWidget(topLevelWidget);
 
-	AppButtonWatcher *appButtonWatcher = new AppButtonWatcher(this);
-	QApplication::instance()->installEventFilter(appButtonWatcher);
-	connect(appButtonWatcher, &AppButtonWatcher::appsMenuShowing, this, &Injection::appsMenuShowing, Qt::QueuedConnection);
+	InjectedEventFilter *eventFilter = new InjectedEventFilter(this);
+	QApplication::instance()->installEventFilter(eventFilter);
+	connect(
+		eventFilter, &InjectedEventFilter::appsMenuShowing, 
+		this, &Injection::appsMenuShowing, 
+		Qt::QueuedConnection
+	);
+
+	QDBusConnection systemBus = QDBusConnection::systemBus();
+	if (!systemBus.isConnected()) {
+		qWarning("cannot connect to system bus");
+	} else {
+		systemBus.registerService("lol.ssj.xwspr");
+		systemBus.registerObject("/", this, QDBusConnection::ExportAllSlots);
+	}
 }
 
 const char *Injection::getTestText()
@@ -104,3 +119,17 @@ void Injection::appsMenuShowing()
 		});		
 }
 
+void Injection::wsprReceived(const QString &time,
+		const QString &snr,
+		const QString &freq,
+		const QString &call,
+		const QString &grid,
+		const QString &power)
+{
+	if (wsprWidget) {
+		wsprWidget->wsprReceived(time, snr, freq, call, grid, power);
+	} else {		
+		qWarning("%s %s %s %s %s %s", qUtf8Printable(time), qUtf8Printable(snr), 
+		 qUtf8Printable(freq), qUtf8Printable(call), qUtf8Printable(grid), qUtf8Printable(power));
+	}
+}

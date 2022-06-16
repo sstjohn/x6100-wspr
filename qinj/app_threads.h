@@ -8,7 +8,7 @@ private:
 	void run() override;
 
 Q_SIGNALS:
-	void injectionThreadMoved(QThread *newThread);
+	void injectionThreadMoved();
 };
 
 class IPythonThread : public QThread 
