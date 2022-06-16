@@ -222,7 +222,7 @@ def upload_spots(recording=None, spotfile="wspr_spots.txt"):
         print("no spots")
         return True
     files = {'allmept': open(f"{DATA_DIR}/{spotfile}", 'r')}
-    params = {'call': CALL, 'grid': GRID, 'version': 'x6w-0.8.9'}
+    params = {'call': CALL, 'grid': GRID, 'version': 'x6w-0.9.4'}
     response = None
     try:
         response = requests.post('http://wsprnet.org/post', files=files, params=params)
