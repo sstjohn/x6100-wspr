@@ -43,10 +43,6 @@ This will take over an hour and several dozen gigabytes of disk space.
 * Set the `X6100_SDCARD_DEV` environment variable to the SD card device and
   the buildroot will update its second partition with the new rootfs in the 
   post image step. (See `br2_external/build/post_image.sh` for details.)
-* The kernel built in the buildroot will boot, but will not drive the display
-  as panel drivers are not available. The post-build step replaces the built
-  kernel and modules with those from Xiegu's April 2022 firmware in order to 
-  make the screen work.
 * Demo GUI injection library is injected by default as of v0.8. To preinject
   a previous or custom release, set the LD_PRELOAD environment variable to 
   libqinj.so.1.0.0 and export it prior to running /usr/app_qt/x6100_ui_v100.
