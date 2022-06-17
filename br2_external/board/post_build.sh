@@ -17,12 +17,6 @@ cp -r $TARGET_DIR/usr/share/emmc_sources/etc $TARGET_DIR
 
 cp $BR2_EXTERNAL_X6100_WSPR_PATH/../spotter-loop.py $TARGET_DIR/root/
 
-cat >>$TARGET_DIR/etc/monitrc <<__EOF__
-set httpd port 2812 and
-    allow localhost
-    allow admin:monit
-__EOF__
-
 cat >>$TARGET_DIR/etc/ssh/sshd_config <<__EOF__
 PermitRootLogin yes
 PasswordAuthentication yes

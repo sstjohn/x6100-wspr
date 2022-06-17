@@ -17,7 +17,7 @@ private:
 	QMetaObject::Connection wsprButtonConnection;
 
 	QLabel *lblTxf = 0;
-	QTimer *tmrTestFlash = 0;
+	QTimer *tmrTxfFlash = 0;
 	const char *getTestText();
 	QWidget *topLevelWidget = 0;
 	XWsprWidget *wsprWidget = 0;
@@ -28,7 +28,7 @@ public:
 
 public Q_SLOTS:
 	void injectionThreadMoved();
-	void testFlashTimerExpired();
+	void txfFlashTimerExpired();
 	bool screenshotRequested(QString);
 	void messageBoxRequested(QString);
 	void appsMenuShowing();

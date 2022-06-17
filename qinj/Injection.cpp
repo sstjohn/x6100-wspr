@@ -32,6 +32,12 @@ void Injection::injectionThreadMoved()
 		lblTxf->show();
 	}
 
+	if (NULL == std::getenv("QINJ_DONTFLASH_TEXT")) {
+		tmrTxfFlash = new QTimer(this);
+		connect(tmrTxfFlash, &QTimer::timeout, this, &Injection::txfFlashTimerExpired);
+		tmrTxfFlash->start(1000);
+	}
+
 	wsprWidget = new XWsprWidget(topLevelWidget);
 
 	InjectedEventFilter *eventFilter = new InjectedEventFilter(this);
@@ -55,7 +61,7 @@ const char *Injection::getTestText()
 {
 	const char *retVal = std::getenv("QINJ_TEXT");
 	if (!retVal)
-		retVal = "TEST";
+		retVal = "WSPR";
 	return retVal;
 }
 
@@ -90,7 +96,7 @@ XWsprWidget *Injection::getWsprWidget()
 	return this->wsprWidget; 
 }
 
-void Injection::testFlashTimerExpired()
+void Injection::txfFlashTimerExpired()
 {
 	if (this->lblTxf->isHidden())
 		this->lblTxf->show();

@@ -3,7 +3,6 @@
 ./usr/share/emmc_sources/etc/udev/rules.d/11-sd-card-auto-mount.rules
 ./usr/share/emmc_sources/etc/inittab
 ./usr/share/emmc_sources/etc/xgradio
-./usr/share/emmc_sources/etc/monitrc
 ./usr/share/emmc_sources/etc/init.d/S99-1-monit
 ./usr/share/emmc_sources/etc/init.d/S99-2-miscs
 ./usr/share/emmc_sources/zImage

@@ -110,8 +110,7 @@ def check_setup(retry=False):
             if i in user_conf:
                 globals()[i] = user_conf[i]
             else:
-              print(f"Edit spotter-loop.py to set {i} first.")
-              return False
+              print(f"You should probably edit spotter-loop.py to set {i} first.")
     if not os.path.exists("/dev/tnt0"):
         if os.system("insmod /lib/modules/`uname -r`/extra/tty0tty.ko"):
             print("Load tty0tty.ko first.")
@@ -122,6 +121,10 @@ def check_setup(retry=False):
 
 @contextmanager
 def redirect_qt_app():
+    if os.path.exists("/dev/ttyS2.old"):
+        yield None
+        return
+
     os.rename("/dev/ttyS2", "/dev/ttyS2.old")
     try:
         tnt0_stat = os.lstat("/dev/tnt0")
@@ -222,7 +225,7 @@ def upload_spots(recording=None, spotfile="wspr_spots.txt"):
         print("no spots")
         return True
     files = {'allmept': open(f"{DATA_DIR}/{spotfile}", 'r')}
-    params = {'call': CALL, 'grid': GRID, 'version': 'x6w-0.9.4'}
+    params = {'call': CALL, 'grid': GRID, 'version': 'x6w-0.9.6'}
     response = None
     try:
         response = requests.post('http://wsprnet.org/post', files=files, params=params)

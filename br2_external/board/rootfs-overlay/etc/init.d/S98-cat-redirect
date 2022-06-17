@@ -1,0 +1,26 @@
+#! /bin/sh
+
+# set -e
+source /etc/profile
+
+case "$1" in
+  start)
+	modprobe tty0tty
+	mv /dev/ttyS2 /dev/ttyS2.old
+	mknod /dev/ttyS2 c $(ls -la /dev/tnt0 | sed -e 's/  */ /g' | cut -f 5-6 -d\  | tr -d ,)
+	;;
+
+  stop)
+	if [ -e /dev/ttyS2.old ]; then
+		mv /dev/ttyS2.old /dev/ttyS2
+	fi
+	;;
+
+  *)
+	echo "Usage: $0 {start|stop}" >&2
+	exit 1
+	;;
+
+esac
+
+exit 0
