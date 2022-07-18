@@ -5,6 +5,9 @@ source /etc/profile
 
 case "$1" in
   start)
+        if [ /lib/modules/$(uname -r)/modules.dep -ot /lib/modules/$(uname -r)/extra ]; then
+	  depmod
+	fi
 	modprobe tty0tty
 	mv /dev/ttyS2 /dev/ttyS2.old
 	mknod /dev/ttyS2 c $(ls -la /dev/tnt0 | sed -e 's/  */ /g' | cut -f 5-6 -d\  | tr -d ,)

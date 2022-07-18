@@ -42,11 +42,6 @@ void Injection::injectionThreadMoved()
 
 	InjectedEventFilter *eventFilter = new InjectedEventFilter(this);
 	QApplication::instance()->installEventFilter(eventFilter);
-	connect(
-		eventFilter, &InjectedEventFilter::appsMenuShowing, 
-		this, &Injection::appsMenuShowing, 
-		Qt::QueuedConnection
-	);
 
 	QDBusConnection systemBus = QDBusConnection::systemBus();
 	if (!systemBus.isConnected()) {

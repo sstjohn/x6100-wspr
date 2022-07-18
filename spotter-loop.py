@@ -78,7 +78,7 @@ BANDS = {
 
 ALL_BAND_DEFAULTS = {'enabled': True}
 
-HOPPING_SCHEDULE = ["160", "80", "60", "40", "30", "20", "17", "15", "12", "10"] * 3
+HOPPING_SCHEDULE = ["160", "80", "60", "40", "30", "20", "17", "15", "12", "10"]
 
 DATA_DIR="/root"
 WSPRD_ARGS=f"-w -a {DATA_DIR}"
@@ -176,7 +176,7 @@ def get_rig():
 
 
 def hop_bands(rig):
-    schedule_index = ceil(datetime.utcnow().minute / 2.0) % 30
+    schedule_index = int(((datetime.utcnow().minute + 2) % 20) / 2)
     chosen_band = HOPPING_SCHEDULE[schedule_index]
     band_params = dict(ALL_BAND_DEFAULTS, **BANDS[chosen_band])
     if not band_params['enabled']:
@@ -225,7 +225,7 @@ def upload_spots(recording=None, spotfile="wspr_spots.txt"):
         print("no spots")
         return True
     files = {'allmept': open(f"{DATA_DIR}/{spotfile}", 'r')}
-    params = {'call': CALL, 'grid': GRID, 'version': 'x6w-0.9.6'}
+    params = {'call': CALL, 'grid': GRID, 'version': 'x6w-0.9.8'}
     response = None
     try:
         response = requests.post('http://wsprnet.org/post', files=files, params=params)

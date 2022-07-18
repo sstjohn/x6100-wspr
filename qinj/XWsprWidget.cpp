@@ -6,6 +6,9 @@
 #include <QHeaderView>
 #include <QScrollBar>
 
+
+
+
 void XWsprWidget::wsprReceived(const QString &time,
 		const QString &snr,
 		const QString &freq,
@@ -35,7 +38,7 @@ XWsprWidget::XWsprWidget(QWidget *parent) :
 {
 	setObjectName("XWsprWidget");
 
-	setGeometry(0, 176, 800, 250);
+	setGeometry(0, 176, 800, 301);
 	setAutoFillBackground(true);
 
 	wsprStore = new QStandardItemModel(0, 6);

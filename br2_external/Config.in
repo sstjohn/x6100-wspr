@@ -13,6 +13,14 @@ config BR2_EXTERNAL_X6100_PREINJECT_BY_DEFAULT
 	depends on BR2_PACKAGE_LIBQINJ
 	default y
 
+config BR2_EXTERNAL_X6100_USE_STOCK_KERNEL
+	bool "Use Xiegu-built kernel"
+	depends on (BR2_LINUX_KERNEL_CUSTOM_VERSION_VALUE="5.8.9")
+	
+config BR2_EXTERNAL_X6100_OVERLAY_MODULES
+	bool "Keep built modules unreleased by Xiegu"
+	depends on BR2_EXTERNAL_X6100_USE_STOCK_KERNEL
+
 comment "packages"
 
 source "$BR2_EXTERNAL_X6100_WSPR_PATH/package/tty0tty/Config.in"

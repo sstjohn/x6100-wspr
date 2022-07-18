@@ -12,8 +12,6 @@ public:
 	InjectedEventFilter(QObject *parent = 0);
 private:
 	XWsprWidget *wsprWidget;
-Q_SIGNALS:
-	void appsMenuShowing();
 protected:
 	bool eventFilter(QObject *obj, QEvent *event) override;
 };

@@ -1,0 +1,23 @@
+#! /bin/sh
+
+# set -e
+source /etc/profile
+
+case "$1" in
+  start)
+	/usr/share/support/rfswitch on
+	ln -sf /var/run/NetworkManager/resolv.conf /etc/resolv.conf
+	;;
+
+  stop)
+	/usr/share/support/rfswitch off
+	;;
+
+  *)
+	echo "Usage: $0 {start|stop}" >&2
+	exit 1
+	;;
+
+esac
+
+exit 0

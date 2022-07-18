@@ -10,9 +10,17 @@ if [ ! -e $BR2_DL_DIR/$ZIP_FILENAME ]; then
   wget -O $BR2_DL_DIR/$ZIP_FILENAME $ZIP_SITE/$ZIP_FILENAME
 fi
 
-#rm -rf $TARGET_DIR/lib/modules/5.8.9/kernel
-#rm $TARGET_DIR/lib/modules/5.8.9/modules.*
+if [ "x$X6100_USE_STOCK_KERNEL" = "xYES" ]; then
+  OVERLAY_FILES="$OVERLAY_FILES ./lib/modules/ ./boot/zImage"
+  if [ "x$X6100_OVERLAY_MODULES" != "xYES" ]; then
+    rm -rf $TARGET_DIR/lib/modules/5.8.9/kernel
+  fi
+fi
+
+ls $TARGET_DIR/lib/modules/5.8.9
+echo unzipping
 unzip -p $BR2_DL_DIR/$ZIP_FILENAME $IMG_FILE | dd bs=1024 skip=529608 | tar xC $TARGET_DIR $OVERLAY_FILES
+ls $TARGET_DIR/lib/modules/5.8.9
 cp -r $TARGET_DIR/usr/share/emmc_sources/etc $TARGET_DIR
 
 cp $BR2_EXTERNAL_X6100_WSPR_PATH/../spotter-loop.py $TARGET_DIR/root/

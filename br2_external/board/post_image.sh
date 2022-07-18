@@ -26,12 +26,14 @@ if [ ! -b ${X6100_SDCARD_DEV}${PART_PREFIX}2 ]; then
   exit 0
 fi
 
-mount_point=`mktemp --dir`
-sudo mount ${X6100_SDCARD_DEV}${PART_PREFIX}1 $mount_point
-sudo cp $1/zImage $mount_point
-sudo umount $mount_point
-sudo mount ${X6100_SDCARD_DEV}${PART_PREFIX}2 $mount_point
-sudo tar xCf $mount_point $1/rootfs.tar
-sudo umount $mount_point
-rmdir $mount_point
+mount_point_root=`mktemp --dir`
+sudo mount ${X6100_SDCARD_DEV}${PART_PREFIX}2 $mount_point_root
+sudo tar xCf $mount_point_root $1/rootfs.tar
+mount_point_boot=`mktemp --dir`
+sudo mount ${X6100_SDCARD_DEV}${PART_PREFIX}1 $mount_point_boot
+sudo cp $mount_point_root/boot/zImage $mount_point_boot
+sudo umount $mount_point_root
+sudo umount $mount_point_boot
+rmdir $mount_point_root
+rmdir $mount_point_boot
 echo "SD card updated"
