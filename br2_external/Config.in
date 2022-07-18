@@ -21,6 +21,12 @@ config BR2_EXTERNAL_X6100_OVERLAY_MODULES
 	bool "Keep built modules unreleased by Xiegu"
 	depends on BR2_EXTERNAL_X6100_USE_STOCK_KERNEL
 
+config BR2_EXTERNAL_X6100_RELEASE_BUILD
+	bool "Release build
+	help
+		Remove custom configuration from build and minimize
+		root partition size.
+
 comment "packages"
 
 source "$BR2_EXTERNAL_X6100_WSPR_PATH/package/tty0tty/Config.in"

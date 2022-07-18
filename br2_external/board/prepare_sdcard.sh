@@ -22,6 +22,12 @@ else
   fi
 fi
 
+if [ "x$X6100_RELEASE_BUILD" = "xYES" ]; then
+	ROOTFS_SIZE=+1155072
+else
+	ROOTFS_SIZE=
+fi
+
 umount ${X6100_SDCARD_DEV}*
 fdisk ${X6100_SDCARD_DEV} <<__EOF__
 o
@@ -34,7 +40,7 @@ n
 p
 2
 131072
-+1155072
+$ROOTFS_SIZE
 w
 __EOF__
 

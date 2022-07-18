@@ -34,3 +34,10 @@ __EOF__
 if [ "x$X6100_DEFAULT_PRELOAD" = "xYES" ]; then
   patchelf --add-needed libqinj.so.1.0.0 $TARGET_DIR/usr/app_qt/x6100_ui_v100
 fi
+
+if [ "x$X6100_RELEASE_BUILD" = "xYES"]; then
+	rm $TARGET_DIR/root/spotter-loop.conf
+	find $TARGET_DIR/etc/NetworkManager/system-connections -type f ! -name '*.template' -delete
+	rm $TARGET_DIR/etc/ssh/ssh_host_*
+fi
+

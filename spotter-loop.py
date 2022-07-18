@@ -112,7 +112,7 @@ def check_setup(retry=False):
                     BANDS[band] = user_conf["BANDS"][band]
         if "HOPPING_SCHEDULE" in user_conf:
             if len(user_conf["HOPPING_SCHEDULE"]) == 10:
-                HOPPING_SCHEDULE = user_conf["HOPPING_SCHEDULE"]
+		globals()["HOPPING_SCHEDULE"] = user_conf["HOPPING_SCHEDULE"]
             else:
                 print("HOPPING_SCHEDULE in spotter-loop.conf is not ten items long, ignoring.")
 
