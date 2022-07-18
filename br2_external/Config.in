@@ -22,7 +22,7 @@ config BR2_EXTERNAL_X6100_OVERLAY_MODULES
 	depends on BR2_EXTERNAL_X6100_USE_STOCK_KERNEL
 
 config BR2_EXTERNAL_X6100_RELEASE_BUILD
-	bool "Release build
+	bool "Release build"
 	help
 		Remove custom configuration from build and minimize
 		root partition size.

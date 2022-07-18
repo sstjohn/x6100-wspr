@@ -11,7 +11,6 @@ mode=infrastructure
 ssid=ENTER YOUR WIFI SSID HERE
 
 [wifi-security]
-auth-alg=open
 key-mgmt=wpa-psk
 psk=ENTER YOUR WIFI PASSWORD HERE
 

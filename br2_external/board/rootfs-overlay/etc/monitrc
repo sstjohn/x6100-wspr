@@ -5,7 +5,7 @@ check process x6100_ui_v100
     stop  program = "/usr/share/support/userapp stop"
 check process spotter-loop
     matching "spotter-loop\.py"
-    start program = "/bin/bash -c 'python -u /root/spotter-loop.py 2>&1 | tee /root/spotter-loop.log &'"
+    start program = "/bin/bash -c 'python -u /root/spotter-loop.py 2>&1 | tee -a /root/spotter-loop.log &'"
     stop  program = "/bin/bash -c '/bin/ps | grep spotter-loop\\\. | awk -e \{print\\ \$1\} | xargs kill'"
 set httpd port 2812 and
     allow localhost

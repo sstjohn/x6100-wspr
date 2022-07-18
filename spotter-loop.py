@@ -112,7 +112,7 @@ def check_setup(retry=False):
                     BANDS[band] = user_conf["BANDS"][band]
         if "HOPPING_SCHEDULE" in user_conf:
             if len(user_conf["HOPPING_SCHEDULE"]) == 10:
-		globals()["HOPPING_SCHEDULE"] = user_conf["HOPPING_SCHEDULE"]
+                globals()["HOPPING_SCHEDULE"] = user_conf["HOPPING_SCHEDULE"]
             else:
                 print("HOPPING_SCHEDULE in spotter-loop.conf is not ten items long, ignoring.")
 
@@ -201,7 +201,7 @@ def hop_bands(rig):
     chosen_band = HOPPING_SCHEDULE[schedule_index]
     band_params = dict(ALL_BAND_DEFAULTS, **BANDS[chosen_band])
     if not band_params['enabled']:
-        chosen_band = choice(list(filter(lambda b: BANDS[b]["enabled"], BANDS)))
+        chosen_band = choice(list(filter(lambda b: BANDS[b].get("enabled", ALL_BAND_DEFAULTS["enabled"]), BANDS)))
 
     print(f"hopping to {chosen_band}m band ({BANDS[chosen_band]['frequency']}c)")
 

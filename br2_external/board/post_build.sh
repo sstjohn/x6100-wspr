@@ -17,10 +17,7 @@ if [ "x$X6100_USE_STOCK_KERNEL" = "xYES" ]; then
   fi
 fi
 
-ls $TARGET_DIR/lib/modules/5.8.9
-echo unzipping
 unzip -p $BR2_DL_DIR/$ZIP_FILENAME $IMG_FILE | dd bs=1024 skip=529608 | tar xC $TARGET_DIR $OVERLAY_FILES
-ls $TARGET_DIR/lib/modules/5.8.9
 cp -r $TARGET_DIR/usr/share/emmc_sources/etc $TARGET_DIR
 
 cp $BR2_EXTERNAL_X6100_WSPR_PATH/../spotter-loop.py $TARGET_DIR/root/
@@ -35,7 +32,7 @@ if [ "x$X6100_DEFAULT_PRELOAD" = "xYES" ]; then
   patchelf --add-needed libqinj.so.1.0.0 $TARGET_DIR/usr/app_qt/x6100_ui_v100
 fi
 
-if [ "x$X6100_RELEASE_BUILD" = "xYES"]; then
+if [ "x$X6100_RELEASE_BUILD" = "xYES" ]; then
 	rm $TARGET_DIR/root/spotter-loop.conf
 	find $TARGET_DIR/etc/NetworkManager/system-connections -type f ! -name '*.template' -delete
 	rm $TARGET_DIR/etc/ssh/ssh_host_*
