@@ -37,8 +37,8 @@ import dbus
 import Hamlib
 import requests
 
-CALL=""
-GRID=""
+CALL="W9SSJ"
+GRID="EN63bc"
 
 BANDS = {
   "160": {
@@ -76,7 +76,7 @@ BANDS = {
   }
 }
 
-ALL_BAND_DEFAULTS = {'enabled': True}
+ALL_BAND_DEFAULTS = {'enabled': True, 'preamp': True}
 
 HOPPING_SCHEDULE = ["160", "80", "60", "40", "30", "20", "17", "15", "12", "10"]
 
@@ -221,7 +221,7 @@ def add_spots_to_ui(recording):
             )
 
 def upload_spots(recording=None, spotfile="wspr_spots.txt"):
-    if os.path.getsize(spotfile) == 0:
+    if os.path.getsize(f"{DATA_DIR}/{spotfile}") == 0:
         print("no spots")
         return True
     files = {'allmept': open(f"{DATA_DIR}/{spotfile}", 'r')}
