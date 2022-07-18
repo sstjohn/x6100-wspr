@@ -21,7 +21,7 @@ $ sudo dd if=x6100-wspr-0.9.8.img of=/dev/sdb bs=4k
 
 Boot the X6100 with that SD card in the CARD slot.
 
-## Configuration (optional, required wsprnet reporting, persists across reboots)
+## Configuration (optional, required wsprnet reporting, persists)
 
 Steps 1-4 can be done on another device by mounting partition 2 of the SD card.
 
@@ -30,9 +30,9 @@ Steps 1-4 can be done on another device by mounting partition 2 of the SD card.
 3. Copy /etc/NetworkManager/system-connections/default.nmconnection.template to /etc/NetworkManager/system-connections/default.nmconnection.
 4. Set WiFi SSID and PSK in that file.
 5. If you did all that through the serial console, reboot.
-6. Once connected to wifi, sync time with `/etc/init.d/S48sntpd restart`.
+6. Once connected to wifi, sync time with `/etc/init.d/S48sntpd start`.
 
-Step 6 is only required if the system clock is wrong. The network is usually not up in time for that boot script, so it has to be done manually.
+Step 6 is only required if the system clock is wrong. The network is usually not up in time for that init script, so sntpd has to be started manually.
 
 ## Root filesystem build
 
