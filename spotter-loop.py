@@ -76,7 +76,7 @@ BANDS = {
   }
 }
 
-ALL_BAND_DEFAULTS = {'enabled': True, 'preamp': True}
+ALL_BAND_DEFAULTS = {'enabled': True}
 
 HOPPING_SCHEDULE = ["160", "80", "60", "40", "30", "20", "17", "15", "12", "10"]
 
@@ -90,7 +90,7 @@ def check_setup(retry=False):
         resolv = []
     if not 'nameserver' in ''.join(resolv):
         if os.path.exists("/run/NetworkManager/resolv.conf") and not ''.join(resolv) and not retry:
-            os.system("cp /run/NetworkManager/resolv.conf /etc")
+            os.system("ln -sf /run/NetworkManager/resolv.conf /etc/resolv.conf")
             return check_setup(True)
         else:
             print("Set up /etc/resolv.conf for DNS resolution to spot to wsprnet.org.")
@@ -99,10 +99,31 @@ def check_setup(retry=False):
     if os.system("command -v wsprd 2>&1 >/dev/null"):
         print("Put wsprd directory on PATH first.")
         return False
-    if os.path.exists(f"{DATA_DIR}/.spotter.conf"):
-        user_conf = json.load(open(f"{DATA_DIR}/.spotter.conf", "r"))
+
+    if os.path.exists(f"{DATA_DIR}/spotter-loop.conf"):
+        user_conf = json.load(open(f"{DATA_DIR}/spotter-loop.conf", "r"))
         if "ALL_BAND_DEFAULTS" in user_conf:
             ALL_BAND_DEFAULTS.update(user_conf["ALL_BAND_DEFAULTS"])
+        if "BANDS" in user_conf:
+            for band in user_conf["BANDS"]:
+                try:
+                    BANDS[band].update(user_conf["BANDS"][band])
+                except KeyError:
+                    BANDS[band] = user_conf["BANDS"][band]
+        if "HOPPING_SCHEDULE" in user_conf:
+            if len(user_conf["HOPPING_SCHEDULE") == 10:
+                HOPPING_SCHEDULE = user_conf["HOPPING_SCHEDULE"]
+            else:
+                print("HOPPING_SCHEDULE in spotter-loop.conf is not ten items long, ignoring.")
+
+        for band in HOPPING_SCHEDULE:
+            if not band in BANDS:
+                print(f"{band} in HOPPING_SCHEDULE but not BANDS, disabling.")
+                BANDS[band] = {'enabled': False}
+            elif not BANDS[band].get("frequency"):
+                print(f"No frequency for {band}, disabling.")
+                BANDS[band]["enabled"] = False
+
     else:
         user_conf = {}
     for i in ("CALL", "GRID"):
@@ -110,7 +131,7 @@ def check_setup(retry=False):
             if i in user_conf:
                 globals()[i] = user_conf[i]
             else:
-              print(f"You should probably edit spotter-loop.py to set {i} first.")
+              print(f"You should probably create/edit spotter-loop.conf to set {i} first.")
     if not os.path.exists("/dev/tnt0"):
         if os.system("insmod /lib/modules/`uname -r`/extra/tty0tty.ko"):
             print("Load tty0tty.ko first.")
