@@ -4,6 +4,8 @@
 * Uploads spots to wsprnet.org when online
 * Bonus userland improvements
 
+![screenshot](/docs/screenshot.png?raw=true)
+
 ## Installation Overview
 
 1. Download the compressed [SD card image](https://github.com/sstjohn/x6100-wspr/releases/download/v0.9.8/x6100-wspr-0.9.8.img.xz). 
