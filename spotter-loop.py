@@ -37,8 +37,8 @@ import dbus
 import Hamlib
 import requests
 
-CALL="W9SSJ"
-GRID="EN63bc"
+CALL=""
+GRID=""
 
 BANDS = {
   "160": {
