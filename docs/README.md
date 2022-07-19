@@ -47,4 +47,4 @@ This will take over an hour and several dozen gigabytes of disk space.
 
 ## Screenshot
 
-![screenshot](/docs/screenshot.png?raw=true)
+![screenshot](screenshot.png?raw=true)
