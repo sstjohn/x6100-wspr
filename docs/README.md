@@ -4,8 +4,6 @@
 * Uploads spots to wsprnet.org when online
 * Bonus userland improvements
 
-![screenshot](/docs/screenshot.png?raw=true)
-
 ## Installation Overview
 
 1. Download the compressed [SD card image](https://github.com/sstjohn/x6100-wspr/releases/download/v0.9.8/x6100-wspr-0.9.8.img.xz). 
@@ -47,3 +45,6 @@ This will take over an hour and several dozen gigabytes of disk space.
 5. `cd br2_build; make -j$(nproc)`
 6.  Produced image output to `br2_build/images/rootfs.tar`.
 
+## Screenshot
+
+![screenshot](/docs/screenshot.png?raw=true)
