@@ -16,6 +16,7 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 
+import asyncio
 from contextlib import contextmanager
 from datetime import datetime
 from glob import glob
@@ -31,10 +32,11 @@ from threading import Thread
 from time import sleep
 from traceback import print_exc
 
-from apscheduler.schedulers.blocking import BlockingScheduler
+from apscheduler.schedulers.asyncio import AsyncIOScheduler
 from apscheduler.triggers.cron import CronTrigger
-import dbus
+import dbussy
 import Hamlib
+import ravel
 import requests
 
 CALL=""
@@ -228,8 +230,8 @@ def add_spots_to_ui(recording):
         return
 
     try:
-        injection_proxy = dbus.SystemBus().get_object('lol.ssj.xwspr', '/')
-    except dbus.exceptions.DBusException:
+        injection_proxy = ravel.system_bus()['lol.ssj.xwspr']['/'].get_interface("lol.ssj.xwspr")
+    except dbussy.DBusError:
         return
 
     with open(f"{DATA_DIR}/wspr_spots.txt", "r") as spotfile:
@@ -294,11 +296,13 @@ def main():
             decode_thread = Thread(target=decode_thread_main, args=[recordings_queue])
             decode_thread.start()
             try:
-                scheduler = BlockingScheduler()
+                loop = asyncio.new_event_loop()
+                scheduler = AsyncIOScheduler(event_loop=loop)
                 scheduler.add_job(do_rx, CronTrigger(minute='*/2', second=0), args=[recordings_queue, rig])
                 scheduler.add_job(retry_failed_spot_uploads, CronTrigger(minute='*/30'))
                 hop_bands(rig)
                 scheduler.start()
+                loop.run_forever()
             finally:
                 try: recordings_queue.put((None, None), block=False)
                 except Exception: pass

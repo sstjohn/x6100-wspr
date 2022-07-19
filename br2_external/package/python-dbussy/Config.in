@@ -1,0 +1,3 @@
+config BR2_PACKAGE_PYTHON_DBUSSY
+	bool "python-dbussy"
+	depends on BR2_PACKAGE_PYTHON3
