@@ -82,8 +82,12 @@ ALL_BAND_DEFAULTS = {'enabled': True}
 
 HOPPING_SCHEDULE = ["160", "80", "60", "40", "30", "20", "17", "15", "12", "10"]
 
+TX_CHANCE = 0.15
+
 DATA_DIR="/root"
 WSPRD_ARGS=f"-w -a {DATA_DIR}"
+
+usb_loopback = False
 
 def check_setup(retry=False):
     try:
@@ -102,10 +106,21 @@ def check_setup(retry=False):
         print("Put wsprd directory on PATH first.")
         return False
 
+    if os.system('lsusb | grep -q "0d8c:0012"'):
+        globals()['usb_loopback'] = True
+
     if os.path.exists(f"{DATA_DIR}/spotter-loop.conf"):
         user_conf = json.load(open(f"{DATA_DIR}/spotter-loop.conf", "r"))
+        if 'TX_CHANCE' in user_conf:
+                if 0 < float(user_conf['TX_CHANCE']) < 1:
+                        globals()['TX_CHANCE'] = float(user_conf['TX_CHANCE'])
+                else:
+                        print(f"TX_CHANCE from user configuration is not between 0 and 1, ignoring.")
         if "ALL_BAND_DEFAULTS" in user_conf:
             ALL_BAND_DEFAULTS.update(user_conf["ALL_BAND_DEFAULTS"])
+            if ALL_BAND_DEFAULTS.get("tx_enable") and not usb_loopback:
+                print("TX enabled but USB lookpack unavailable, disabling.")
+                ALL_BAND_DEFAULTS['tx_enable'] = False
         if "BANDS" in user_conf:
             for band in user_conf["BANDS"]:
                 try:
@@ -125,6 +140,9 @@ def check_setup(retry=False):
             elif not BANDS[band].get("frequency"):
                 print(f"No frequency for {band}, disabling.")
                 BANDS[band]["enabled"] = False
+            if BANDS[band].get("tx_enable") and not usb_loopback:
+                print(f"TX enabled for {band} but USB loopback unavailable, disabling.")
+                BANDS[band]["tx_enable"] = False
 
     else:
         user_conf = {}
