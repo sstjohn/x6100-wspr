@@ -1,5 +1,7 @@
 # WSPR tools firmware for the Xiegu X6100
 
+Project page: <https://xwspr.ssj.lol>
+
 * Receive only (so far)
 * Uploads spots to wsprnet.org when online
 * Bonus userland improvements
@@ -47,4 +49,4 @@ This will take over an hour and several dozen gigabytes of disk space.
 
 ## Screenshot
 
-![screenshot](screenshot.png?raw=true)
+![screenshot](site/screenshot.png)

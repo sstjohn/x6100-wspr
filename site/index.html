@@ -1,0 +1,113 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>xwspr — WSPR tools for the Xiegu X6100</title>
+  <meta name="description" content="WSPR tools firmware for the Xiegu X6100: receive only so far, with online spot uploads to wsprnet.org and userland improvements. Installation and configuration notes.">
+  <link rel="canonical" href="https://xwspr.ssj.lol/">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="xwspr">
+  <meta property="og:locale" content="en_US">
+  <meta property="og:title" content="xwspr — WSPR tools for the Xiegu X6100">
+  <meta property="og:description" content="WSPR tools firmware for the Xiegu X6100: receive only so far, with online spot uploads to wsprnet.org and userland improvements. Installation and configuration notes.">
+  <meta property="og:url" content="https://xwspr.ssj.lol/">
+  <meta property="og:image" content="https://xwspr.ssj.lol/screenshot.png">
+  <meta property="og:image:width" content="800">
+  <meta property="og:image:height" content="480">
+  <meta property="og:image:alt" content="X6100 WSPR display with decoded spots listed by time, SNR, frequency, call sign, grid, and power.">
+  <meta name="twitter:card" content="summary_large_image">
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "SoftwareSourceCode",
+    "name": "xwspr",
+    "description": "WSPR tools firmware for the Xiegu X6100: receive only so far, with online spot uploads to wsprnet.org and userland improvements. Installation and configuration notes.",
+    "url": "https://xwspr.ssj.lol/",
+    "codeRepository": "https://github.com/sstjohn/x6100-wspr",
+    "programmingLanguage": ["Python", "C++"],
+    "license": "https://spdx.org/licenses/GPL-3.0-only.html",
+    "author": {
+      "@type": "Person",
+      "name": "Saul St John",
+      "url": "https://ssj.lol/"
+    }
+  }
+  </script>
+  <meta name="color-scheme" content="light dark">
+  <link rel="icon" href="favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header>
+    <h1>xwspr</h1>
+    <p>WSPR tools firmware for the Xiegu X6100.</p>
+    <nav aria-label="Project links">
+      <a href="https://github.com/sstjohn/x6100-wspr">GitHub repository</a>
+      <a href="https://github.com/sstjohn/x6100-wspr/releases">Releases</a>
+      <a href="https://ssj.lol">Back to ssj.lol</a>
+    </nav>
+  </header>
+
+  <main>
+    <section aria-labelledby="overview">
+      <h2 id="overview">What it does</h2>
+      <ul>
+        <li>Receives WSPR; receive only so far.</li>
+        <li>Uploads spots to wsprnet.org when online.</li>
+        <li>Includes userland improvements.</li>
+      </ul>
+      <figure id="screenshot">
+        <img src="screenshot.png" width="800" height="480" alt="X6100 WSPR display with decoded spots listed by time, SNR, frequency, call sign, grid, and power.">
+      </figure>
+    </section>
+
+    <section aria-labelledby="installation-overview">
+      <h2 id="installation-overview">Installation</h2>
+      <ol>
+        <li>Download the compressed <a href="https://github.com/sstjohn/x6100-wspr/releases/download/v0.9.8/x6100-wspr-0.9.8.img.xz">v0.9.8 SD card image</a>.</li>
+        <li>Decompress it: <code>xz -d x6100-wspr-0.9.8.img.xz</code>.</li>
+        <li>Write the decompressed image to the SD card. For example, if your SD card is <code>/dev/sdb</code>:
+          <pre tabindex="0" role="region" aria-label="SD card write example"><code>sudo dd if=x6100-wspr-0.9.8.img of=/dev/sdb bs=4k</code></pre>
+        </li>
+      </ol>
+    </section>
+
+    <section aria-labelledby="use">
+      <h2 id="use">Use</h2>
+      <p>Boot the X6100 with that SD card in the CARD slot.</p>
+    </section>
+
+    <section aria-labelledby="configuration-optional-required-wsprnet-reporting-persists">
+      <h2 id="configuration-optional-required-wsprnet-reporting-persists">Configuration</h2>
+      <p>Configuration is required for wsprnet reporting, and settings persist across reboots.
+        Steps 1–4 can be done on another device by mounting partition 2 of the SD card.</p>
+      <ol>
+        <li>Copy <code>/root/spotter-loop.conf.template</code> to <code>/root/spotter-loop.conf</code>.</li>
+        <li>Update at least <code>CALL</code> and <code>GRID</code> in that file.</li>
+        <li>Copy <code>/etc/NetworkManager/system-connections/default.nmconnection.template</code> to <code>/etc/NetworkManager/system-connections/default.nmconnection</code>.</li>
+        <li>Set the WiFi SSID and PSK in that file.</li>
+        <li>If you configured through the serial console, reboot.</li>
+        <li>Once connected to WiFi, sync time with <code>/etc/init.d/S48sntpd start</code> if the system clock is wrong.</li>
+      </ol>
+      <p>The network is usually not up in time for that init script, so sntpd has to be started manually.</p>
+    </section>
+
+    <section aria-labelledby="root-filesystem-build">
+      <h2 id="root-filesystem-build">Root filesystem build</h2>
+      <p>This takes over an hour and several dozen gigabytes of disk space.</p>
+      <pre tabindex="0" role="region" aria-label="Root filesystem build commands"><code>wget https://buildroot.org/downloads/buildroot-2020.02.9.tar.gz
+git clone https://github.com/sstjohn/x6100-wspr.git
+tar xf buildroot-2020.02.9.tar.gz
+make -C buildroot-2020.02.9 O=../br2_build BR2_EXTERNAL=../x6100-wspr/br2_external x6100-wspr_defconfig
+cd br2_build
+make -j$(nproc)</code></pre>
+      <p>The output is <code>br2_build/images/rootfs.tar</code>.</p>
+    </section>
+  </main>
+
+  <footer>
+    <p><a href="https://github.com/sstjohn/x6100-wspr/blob/main/LICENSE.txt">GPL-3.0-only license</a></p>
+  </footer>
+</body>
+</html>
